@@ -22,10 +22,10 @@ void free_textures(t_mlx *mlx)
 
 void load_textures(t_mlx *mlx)
 {
-    mlx->texture.north = mlx_load_png("texture/nahimg.png");
-    mlx->texture.south = mlx_load_png("texture/nahimg.png");
-    mlx->texture.east = mlx_load_png("texture/nahimg.png");
-    mlx->texture.west = mlx_load_png("texture/nahimg.png");
+    mlx->map.textures[0] = mlx_load_png("/home/marouane/Cub3d/texture/north.jpeg");
+    mlx->map.textures[1] = mlx_load_png("/home/marouane/Cub3d/texture/south.jpeg");
+    mlx->map.textures[2] = mlx_load_png("/home/marouane/Cub3d/texture/east.jpeg");
+    mlx->map.textures[3] = mlx_load_png("/home/marouane/Cub3d/texture/west.jpeg");
 
     if (!mlx->texture.north || !mlx->texture.south || 
         !mlx->texture.east || !mlx->texture.west)

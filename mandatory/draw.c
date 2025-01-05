@@ -77,52 +77,58 @@ void draw_player(t_mlx *mlx, int x0, int y0, int color)
     }
 }
 
-void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
-{
-    float ray_x, ray_y;
-    float dist, h, start_d, end_d;
-    int texture_x;
-    mlx_texture_t *tex;
+void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int texture_index) {
+    int start = (HEIGHT / 2) - (wall_height / 2);
+    int end = (HEIGHT / 2) + (wall_height / 2);
+    float step = (float)mlx->map.textures[texture_index]->height / wall_height;
+    float texture_y = 0;
+    int y = start;
+    
+    // Draw slice pixel by pixel
+    while (y < end) {
+        if (y >= 0 && y < HEIGHT) {
+            int color = mlx_get_pixel(mlx->map.textures[texture_index], texture_x, (int)texture_y);
+            mlx_put_pixel(mlx->img.img, x, y, color);
+        }
+        texture_y += step;
+        y++;
+    }
+}
 
-    ray_x = mlx->player.x;
-    ray_y = mlx->player.y;
-    while (!wall(mlx, ray_x, ray_y))
-    {
+
+
+void draw_rays(t_mlx *mlx, float ray_angl, int i_x) {
+    float ray_x = mlx->player.x;
+    float ray_y = mlx->player.y;
+    float dist;
+    float wall_height;
+    float texture_x;
+    int texture_index = 0;
+
+    // Ray loop to find wall hit
+    while (!wall(mlx, ray_x, ray_y)) {
         ray_x += cos(ray_angl);
         ray_y -= sin(ray_angl);
     }
 
-    // Calculate distance to wall
+    // Distance to wall
     dist = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
-    h = (size / dist) * ((HEIGHT / 2) / tan(PI / 6));
-    start_d = (HEIGHT / 2) - (h / 2);
-    if (start_d < 0) start_d = 0;
-    end_d = (HEIGHT / 2) + (h / 2);
-    if (end_d > HEIGHT) end_d = HEIGHT;
+    wall_height = (size / dist) * ((HEIGHT / 2) / tan(PI / 6));
 
-    // Choose texture based on direction
-    if (ray_x - (int)ray_x < 0.1) tex = mlx->texture.east;
-    else if (ray_x - (int)ray_x > 0.9) tex = mlx->texture.west;
-    else if (ray_y - (int)ray_y < 0.1) tex = mlx->texture.north;
-    else tex = mlx->texture.south;
-
-    // Calculate texture X offset
-    texture_x = (int)(ray_x * tex->width) % tex->width;
-
-    // Draw wall with texture
-    for (float i_y = start_d; i_y < end_d; i_y++)
-    {
-        int texture_y = (int)((i_y - start_d) / (end_d - start_d) * tex->height);
-        int color = *(int *)(tex->pixels + (texture_y * tex->width + texture_x) * tex->bytes_per_pixel);
-        mlx_put_pixel(mlx->img.img, i_x, i_y, color);
+    // Calculate texture_x based on wall hit
+    if ((int)ray_y % size == 0) {
+        texture_index = (ray_angl > 0 && ray_angl < PI) ? 0 : 1;  // North/South walls
+        texture_x = fmod(ray_x, size);
+    } else {
+        texture_index = (ray_angl > PI / 2 && ray_angl < (3 * PI / 2)) ? 2 : 3;  // East/West walls
+        texture_x = fmod(ray_y, size);
     }
 
-    // Ceiling and floor
-    for (float o = 0; o < start_d; o++)
-        mlx_put_pixel(mlx->img.img, i_x, o, mlx->map.c_color);
-    for (float o = end_d; o < HEIGHT; o++)
-        mlx_put_pixel(mlx->img.img, i_x, o, mlx->map.f_color);
+    texture_x = (texture_x / size) * mlx->map.textures[texture_index]->width;
+
+    draw_texture_slice(mlx, i_x, wall_height, texture_x, texture_index);
 }
+
 
 
 void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
@@ -138,29 +144,21 @@ void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
 	}
 }
 
-void    draw(t_mlx *mlx)
+void draw(t_mlx *mlx) 
 {
-	float	ray_x;
-	float	ray_y;
-	float	ray_angl;
-	int		i;
+    float ray_angle = mlx->player.alpha - (PI / 6);
+    int i = WIDTH;
 
-	ray_x = mlx->player.x;
-	ray_y = mlx->player.y;
-	if (mlx->img.img)
-		mlx_delete_image(mlx->mlx, mlx->img.img);
-	mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
-	float f = PI / 3 / WIDTH;  
-	ray_angl = mlx->player.alpha - PI / 6;
-	i = WIDTH;
-	while (i >= 0)
-	{
-		draw_rays(mlx, ray_angl, i);
-		ray_angl += f;
-		i--;
-	}
-    draw_map(mlx);
-	draw_narrow(mlx, ray_x, ray_y, ray_angl - PI / 8);
-	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
+    if (mlx->img.img)
+        mlx_delete_image(mlx->mlx, mlx->img.img);
+    mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
+
+    float step = PI / 3 / WIDTH;
+
+    while (i >= 0) {
+        draw_rays(mlx, ray_angle, i);
+        ray_angle += step;
+        i--;
+    }
+    mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
 }
-
