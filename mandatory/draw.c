@@ -77,42 +77,53 @@ void draw_player(t_mlx *mlx, int x0, int y0, int color)
     }
 }
 
-void	draw_rays(t_mlx *mlx, float ray_angl, int i_x)
+void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
 {
-	float	ray_x;
-	float	ray_y;
-	float	dist;
-	float	h;
-	float	o;
-	float	i_y;
-	float	start_d;
-	float	end_d;
-	
-	ray_x = mlx->player.x;
-	ray_y = mlx->player.y;
-	while (!wall(mlx, ray_x, ray_y))
-	{
-		// mlx_put_pixel(mlx->img.img, ray_x, ray_y, 0XFF0000FF);
-		ray_x += cos(ray_angl);
-		ray_y -= sin(ray_angl);
-	}
-	dist = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
-	h = (size / dist) * ((HEIGHT / 2) / tan(1.05/ 2));
-	start_d = (HEIGHT / 2) - (h / 2);
-	if(start_d < 0)
-		start_d = 0;
-	i_y = start_d;
-	end_d = (HEIGHT / 2) + (h / 2);
-	if(end_d > HEIGHT)
-		end_d = HEIGHT;
-	o = 0;
-	while (o < i_y)
-		mlx_put_pixel(mlx->img.img,i_x,o++, mlx->map.f_color);
-	while (i_y < end_d)
-		mlx_put_pixel(mlx->img.img,i_x,i_y++, 0XFFFFFFF);
-	while(end_d < HEIGHT)
-		mlx_put_pixel(mlx->img.img,i_x,end_d++, mlx->map.c_color);
+    float ray_x, ray_y;
+    float dist, h, start_d, end_d;
+    int texture_x;
+    mlx_texture_t *tex;
+
+    ray_x = mlx->player.x;
+    ray_y = mlx->player.y;
+    while (!wall(mlx, ray_x, ray_y))
+    {
+        ray_x += cos(ray_angl);
+        ray_y -= sin(ray_angl);
+    }
+
+    // Calculate distance to wall
+    dist = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
+    h = (size / dist) * ((HEIGHT / 2) / tan(PI / 6));
+    start_d = (HEIGHT / 2) - (h / 2);
+    if (start_d < 0) start_d = 0;
+    end_d = (HEIGHT / 2) + (h / 2);
+    if (end_d > HEIGHT) end_d = HEIGHT;
+
+    // Choose texture based on direction
+    if (ray_x - (int)ray_x < 0.1) tex = mlx->texture.east;
+    else if (ray_x - (int)ray_x > 0.9) tex = mlx->texture.west;
+    else if (ray_y - (int)ray_y < 0.1) tex = mlx->texture.north;
+    else tex = mlx->texture.south;
+
+    // Calculate texture X offset
+    texture_x = (int)(ray_x * tex->width) % tex->width;
+
+    // Draw wall with texture
+    for (float i_y = start_d; i_y < end_d; i_y++)
+    {
+        int texture_y = (int)((i_y - start_d) / (end_d - start_d) * tex->height);
+        int color = *(int *)(tex->pixels + (texture_y * tex->width + texture_x) * tex->bytes_per_pixel);
+        mlx_put_pixel(mlx->img.img, i_x, i_y, color);
+    }
+
+    // Ceiling and floor
+    for (float o = 0; o < start_d; o++)
+        mlx_put_pixel(mlx->img.img, i_x, o, mlx->map.c_color);
+    for (float o = end_d; o < HEIGHT; o++)
+        mlx_put_pixel(mlx->img.img, i_x, o, mlx->map.f_color);
 }
+
 
 void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
 {

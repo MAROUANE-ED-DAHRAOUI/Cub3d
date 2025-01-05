@@ -48,6 +48,14 @@ typedef struct s_img
 	int			endian;
 }t_img;
 
+typedef struct s_texture
+{
+    mlx_texture_t *north;
+    mlx_texture_t *south;
+    mlx_texture_t *east;
+    mlx_texture_t *west;
+} t_texture;
+
 typedef struct s_mlx
 {
 	mlx_t		*mlx;
@@ -55,6 +63,9 @@ typedef struct s_mlx
 	mlx_image_t	*mini_img;
 	t_player	player;
 	t_map		map;
+	t_texture       texture;  // Add this line for textures
 }t_mlx;
+
+
 
 # endif

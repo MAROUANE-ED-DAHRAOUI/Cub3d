@@ -12,6 +12,29 @@
 
 #include "../includes/cub3d.h"
 
+void free_textures(t_mlx *mlx)
+{
+    mlx_delete_texture(mlx->texture.north);
+    mlx_delete_texture(mlx->texture.south);
+    mlx_delete_texture(mlx->texture.east);
+    mlx_delete_texture(mlx->texture.west);
+}
+
+void load_textures(t_mlx *mlx)
+{
+    mlx->texture.north = mlx_load_png("texture/nahimg.png");
+    mlx->texture.south = mlx_load_png("texture/nahimg.png");
+    mlx->texture.east = mlx_load_png("texture/nahimg.png");
+    mlx->texture.west = mlx_load_png("texture/nahimg.png");
+
+    if (!mlx->texture.north || !mlx->texture.south || 
+        !mlx->texture.east || !mlx->texture.west)
+    {
+        printf("Error loading textures!\n");
+        exit(1);
+    }
+}
+
 int main(int ac, char **av)
 {
 	t_map		*map;
@@ -27,11 +50,13 @@ int main(int ac, char **av)
 		check_file_type(av[1]);
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
+		load_textures(&mlx);
 		print(&mlx);
 		__create_window(&mlx);
 		draw(&mlx);
 		mlx_key_hook(mlx.mlx, player_move, &mlx);
     	mlx_loop(mlx.mlx);
+		free_textures(&mlx);
 	}
 	else
 		__error(0, 0);
