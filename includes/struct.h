@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   struct.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bbadda <bbadda@student.42.fr>              +#+  +:+       +#+        */
+/*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 21:11:59 by bbadda            #+#    #+#             */
-/*   Updated: 2024/12/01 15:37:33 by bbadda           ###   ########.fr       */
+/*   Updated: 2025/01/06 10:28:52 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
-
-# include "MLX42/MLX42.h" // Include the header file for mlx_texture_t
 
 typedef struct s_cord
 {

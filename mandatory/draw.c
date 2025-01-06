@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bbadda <bbadda@student.42.fr>              +#+  +:+       +#+        */
+/*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2024/12/16 13:25:31 by bbadda           ###   ########.fr       */
+/*   Updated: 2025/01/06 12:00:06 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,20 @@ void draw_player(t_mlx *mlx, int x0, int y0, int color)
     }
 }
 
+int mlx_get_pixel(mlx_texture_t *texture, int x, int y) {
+    if (x < 0 || y < 0 || x >= (int)texture->width || y >= (int)texture->height)
+        return 0; // Out of bounds, return black or transparent
+
+    int index = (y * texture->width + x) * 4; // Assuming RGBA, 4 bytes per pixel
+    int r = texture->pixels[index];
+    int g = texture->pixels[index + 1];
+    int b = texture->pixels[index + 2];
+    int a = texture->pixels[index + 3];
+
+    return (r << 24 | g << 16 | b << 8 | a); // Pack into int format
+}
+
+
 void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int texture_index) {
     int start = (HEIGHT / 2) - (wall_height / 2);
     int end = (HEIGHT / 2) + (wall_height / 2);
@@ -95,9 +109,8 @@ void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int
     }
 }
 
-
-
-void draw_rays(t_mlx *mlx, float ray_angl, int i_x) {
+void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
+{
     float ray_x = mlx->player.x;
     float ray_y = mlx->player.y;
     float dist;
@@ -106,7 +119,8 @@ void draw_rays(t_mlx *mlx, float ray_angl, int i_x) {
     int texture_index = 0;
 
     // Ray loop to find wall hit
-    while (!wall(mlx, ray_x, ray_y)) {
+    while (!wall(mlx, ray_x, ray_y))
+    {
         ray_x += cos(ray_angl);
         ray_y -= sin(ray_angl);
     }
@@ -128,8 +142,6 @@ void draw_rays(t_mlx *mlx, float ray_angl, int i_x) {
 
     draw_texture_slice(mlx, i_x, wall_height, texture_x, texture_index);
 }
-
-
 
 void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
 {
@@ -155,7 +167,8 @@ void draw(t_mlx *mlx)
 
     float step = PI / 3 / WIDTH;
 
-    while (i >= 0) {
+    while (i >= 0)
+    {
         draw_rays(mlx, ray_angle, i);
         ray_angle += step;
         i--;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bbadda <bbadda@student.42.fr>              +#+  +:+       +#+        */
+/*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2024/12/04 12:08:24 by bbadda           ###   ########.fr       */
+/*   Updated: 2025/01/06 12:20:08 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ void free_textures(t_mlx *mlx)
 
 void load_textures(t_mlx *mlx)
 {
-    mlx->map.textures[0] = mlx_load_png("/home/marouane/Cub3d/texture/north.jpeg");
-    mlx->map.textures[1] = mlx_load_png("/home/marouane/Cub3d/texture/south.jpeg");
-    mlx->map.textures[2] = mlx_load_png("/home/marouane/Cub3d/texture/east.jpeg");
-    mlx->map.textures[3] = mlx_load_png("/home/marouane/Cub3d/texture/west.jpeg");
+    mlx->map.textures[0] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/north.png");
+    mlx->map.textures[1] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/south.png");
+    mlx->map.textures[2] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/east.png");
+    mlx->map.textures[3] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/west.png");
 
     if (!mlx->texture.north || !mlx->texture.south || 
         !mlx->texture.east || !mlx->texture.west)
@@ -51,7 +51,7 @@ int main(int ac, char **av)
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
 		load_textures(&mlx);
-		print(&mlx);
+		// print(&mlx);
 		__create_window(&mlx);
 		draw(&mlx);
 		mlx_key_hook(mlx.mlx, player_move, &mlx);
