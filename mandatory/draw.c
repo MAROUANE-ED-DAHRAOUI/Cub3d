@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/06 12:00:06 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/07 11:00:52 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,8 @@ void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
     float ray_x = mlx->player.x;
     float ray_y = mlx->player.y;
     float dist;
-    float wall_height;
     float texture_x;
+    float wall_height;
     int texture_index = 0;
 
     // Ray loop to find wall hit
@@ -131,14 +131,19 @@ void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
 
     // Calculate texture_x based on wall hit
     if ((int)ray_y % size == 0) {
-        texture_index = (ray_angl > 0 && ray_angl < PI) ? 0 : 1;  // North/South walls
-        texture_x = fmod(ray_x, size);
-    } else {
-        texture_index = (ray_angl > PI / 2 && ray_angl < (3 * PI / 2)) ? 2 : 3;  // East/West walls
-        texture_x = fmod(ray_y, size);
+    texture_index = (sin(ray_angl) < 0) ? 0 : 1;  // North/South
+    }
+    else {
+        texture_index = (cos(ray_angl) > 0) ? 3 : 2;  // East/West
     }
 
+    texture_x = fmod(ray_x, size);
     texture_x = (texture_x / size) * mlx->map.textures[texture_index]->width;
+    if (texture_x < 0)
+         texture_x = 0;
+    if (texture_x >= mlx->map.textures[texture_index]->width)
+    texture_x = mlx->map.textures[texture_index]->width - 1;
+
 
     draw_texture_slice(mlx, i_x, wall_height, texture_x, texture_index);
 }
