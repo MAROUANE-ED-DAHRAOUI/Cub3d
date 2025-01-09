@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/07 11:00:52 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/09 11:29:23 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,44 +109,75 @@ void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int
     }
 }
 
+#define MAX_DIST 1000  // Prevent infinite ray loop
+
 void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
 {
     float ray_x = mlx->player.x;
     float ray_y = mlx->player.y;
-    float dist;
+    float dist = 0;
     float texture_x;
     float wall_height;
     int texture_index = 0;
+    float step_size = 0.05;  // Fine step but not too small
 
-    // Ray loop to find wall hit
-    while (!wall(mlx, ray_x, ray_y))
+    // Ray loop to find wall hit (with max distance to avoid infinite loop)
+    while (!wall(mlx, ray_x, ray_y) && dist < MAX_DIST)
     {
-        ray_x += cos(ray_angl);
-        ray_y -= sin(ray_angl);
+        ray_x += cos(ray_angl) * step_size;
+        ray_y -= sin(ray_angl) * step_size;
+        dist += step_size;
+        
+        // Stop if ray goes out of map bounds
+        if (ray_x < 0 || ray_y < 0 || ray_x > WIDTH * size || ray_y > HEIGHT * size)
+            break;
     }
 
-    // Distance to wall
+    // If no wall is hit (max distance reached)
+    if (dist >= MAX_DIST)
+        return;
+
+    // Calculate distance from player to wall hit
     dist = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
     wall_height = (size / dist) * ((HEIGHT / 2) / tan(PI / 6));
 
-    // Calculate texture_x based on wall hit
-    if ((int)ray_y % size == 0) {
-    texture_index = (sin(ray_angl) < 0) ? 0 : 1;  // North/South
-    }
-    else {
-        texture_index = (cos(ray_angl) > 0) ? 3 : 2;  // East/West
+    /* Determine wall hit direction (horizontal or vertical)*/
+    if (fmod(ray_y, size) < step_size) {
+        texture_index = (sin(ray_angl) < 0) ? 0 : 1;  // 0 = North, 1 = South
+    } else {
+        texture_index = (cos(ray_angl) > 0) ? 3 : 2;  // 3 = East, 2 = West
     }
 
-    texture_x = fmod(ray_x, size);
+    // printf("Texture index: %d\n", texture_index);
+    // Check if texture exists to avoid NULL dereference
+    if (!mlx->map.textures[texture_index]) {
+        printf("Texture %d is NULL\n", texture_index);
+        return;
+    }
+
+    // Calculate texture x-coordinate based on wall hit
+    if (texture_index == 0 || texture_index == 1)  // North/South
+        texture_x = fmod(ray_x, size);
+    else  // East/West
+        texture_x = fmod(ray_y, size);
+
+    // Scale to texture width
     texture_x = (texture_x / size) * mlx->map.textures[texture_index]->width;
+
+    // Flip South/East textures
+    if (texture_index == 1 || texture_index == 3)
+        texture_x = mlx->map.textures[texture_index]->width - texture_x - 1;
+
+    // Clamp to prevent out-of-bounds access
     if (texture_x < 0)
-         texture_x = 0;
+        texture_x = 0;
     if (texture_x >= mlx->map.textures[texture_index]->width)
-    texture_x = mlx->map.textures[texture_index]->width - 1;
+        texture_x = mlx->map.textures[texture_index]->width - 1;
 
-
+    // Draw the wall slice
     draw_texture_slice(mlx, i_x, wall_height, texture_x, texture_index);
 }
+    
 
 void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
 {
@@ -171,9 +202,9 @@ void draw(t_mlx *mlx)
     mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
 
     float step = PI / 3 / WIDTH;
-
     while (i >= 0)
     {
+        // printf("Drawing ray %d\n", i);
         draw_rays(mlx, ray_angle, i);
         ray_angle += step;
         i--;

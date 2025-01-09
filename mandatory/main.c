@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/07 11:24:43 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/09 11:08:33 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 
 void free_textures(t_mlx *mlx)
 {
-    mlx_delete_texture(mlx->texture.north);
-    mlx_delete_texture(mlx->texture.south);
-    mlx_delete_texture(mlx->texture.east);
-    mlx_delete_texture(mlx->texture.west);
+	if(mlx->map.textures[0] != NULL && mlx->map.textures[1] != NULL && 
+		mlx->map.textures[2] != NULL && mlx->map.textures[3] != NULL)
+		{
+			free(mlx->map.textures[0]);
+			free(mlx->map.textures[1]);
+			free(mlx->map.textures[2]);
+			free(mlx->map.textures[3]);
+		}
 }
 
 void load_textures(t_mlx *mlx)
