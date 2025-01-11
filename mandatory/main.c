@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/09 11:08:33 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/11 13:30:41 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,3 +70,20 @@ int main(int ac, char **av)
 
 	return (0);
 }
+
+// Main entry point for the game
+// int main(int ac, char **av)
+// {
+//     t_data data;
+
+//     check_requirements(ac, av, &data);
+//     init_mlx_elements(&data);
+//     init_textures(&data); // Initialize textures
+
+//     mlx_loop_hook(data.mlx, ft_loop, &data);
+//     mlx_loop(data.mlx);
+
+//     free_textures(&data); // Free textures after game loop ends
+//     clean_all(&data);
+//     return 0;
+// }

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/09 11:29:23 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/11 10:58:32 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,18 @@ int mlx_get_pixel(mlx_texture_t *texture, int x, int y) {
 }
 
 
-void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int texture_index) {
+void draw_texture_slice(t_mlx *mlx, int x, float wall_height, int texture_x, int texture_index)
+{
     int start = (HEIGHT / 2) - (wall_height / 2);
     int end = (HEIGHT / 2) + (wall_height / 2);
     float step = (float)mlx->map.textures[texture_index]->height / wall_height;
     float texture_y = 0;
     int y = start;
-    
-    // Draw slice pixel by pixel
-    while (y < end) {
-        if (y >= 0 && y < HEIGHT) {
+
+    while (y < end)
+    {
+        if (y >= 0 && y < HEIGHT)
+        {
             int color = mlx_get_pixel(mlx->map.textures[texture_index], texture_x, (int)texture_y);
             mlx_put_pixel(mlx->img.img, x, y, color);
         }
@@ -119,64 +121,49 @@ void draw_rays(t_mlx *mlx, float ray_angl, int i_x)
     float texture_x;
     float wall_height;
     int texture_index = 0;
-    float step_size = 0.05;  // Fine step but not too small
+    float step_size = 0.05; // Step size for ray increment
 
-    // Ray loop to find wall hit (with max distance to avoid infinite loop)
-    while (!wall(mlx, ray_x, ray_y) && dist < MAX_DIST)
+    // Ray loop to find wall hit
+    while (!wall(mlx, ray_y, ray_x) && dist < MAX_DIST)
     {
         ray_x += cos(ray_angl) * step_size;
         ray_y -= sin(ray_angl) * step_size;
         dist += step_size;
-        
-        // Stop if ray goes out of map bounds
-        if (ray_x < 0 || ray_y < 0 || ray_x > WIDTH * size || ray_y > HEIGHT * size)
-            break;
     }
 
-    // If no wall is hit (max distance reached)
-    if (dist >= MAX_DIST)
-        return;
+    if (dist >= MAX_DIST) return; // No wall hit within max distance
 
-    // Calculate distance from player to wall hit
+    // Calculate wall height based on distance
     dist = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
     wall_height = (size / dist) * ((HEIGHT / 2) / tan(PI / 6));
 
-    /* Determine wall hit direction (horizontal or vertical)*/
+    // Determine wall hit direction (North/South or East/West)
     if (fmod(ray_y, size) < step_size) {
-        texture_index = (sin(ray_angl) < 0) ? 0 : 1;  // 0 = North, 1 = South
+        texture_index = (sin(ray_angl) < 0) ? 0 : 1; // 0 = North, 1 = South
     } else {
-        texture_index = (cos(ray_angl) > 0) ? 3 : 2;  // 3 = East, 2 = West
+        texture_index = (cos(ray_angl) > 0) ? 3 : 2; // 3 = East, 2 = West
     }
 
-    // printf("Texture index: %d\n", texture_index);
-    // Check if texture exists to avoid NULL dereference
-    if (!mlx->map.textures[texture_index]) {
-        printf("Texture %d is NULL\n", texture_index);
-        return;
-    }
-
-    // Calculate texture x-coordinate based on wall hit
-    if (texture_index == 0 || texture_index == 1)  // North/South
+    // Calculate texture X-coordinate
+    if (texture_index == 0 || texture_index == 1) // North/South walls
         texture_x = fmod(ray_x, size);
-    else  // East/West
+    else // East/West walls
         texture_x = fmod(ray_y, size);
 
-    // Scale to texture width
     texture_x = (texture_x / size) * mlx->map.textures[texture_index]->width;
 
-    // Flip South/East textures
+    // Flip texture for South/East walls
     if (texture_index == 1 || texture_index == 3)
         texture_x = mlx->map.textures[texture_index]->width - texture_x - 1;
 
-    // Clamp to prevent out-of-bounds access
-    if (texture_x < 0)
-        texture_x = 0;
+    if (texture_x < 0) texture_x = 0; // Clamp to valid range
     if (texture_x >= mlx->map.textures[texture_index]->width)
         texture_x = mlx->map.textures[texture_index]->width - 1;
 
-    // Draw the wall slice
+    // Draw the texture slice
     draw_texture_slice(mlx, i_x, wall_height, texture_x, texture_index);
 }
+
     
 
 void	draw_narrow(t_mlx *mlx, float ray_x, float ray_y, float ray_angl)
