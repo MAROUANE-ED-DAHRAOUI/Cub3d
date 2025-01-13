@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/11 13:30:41 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/13 11:43:49 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,83 @@
 
 void free_textures(t_mlx *mlx)
 {
-	if(mlx->map.textures[0] != NULL && mlx->map.textures[1] != NULL && 
-		mlx->map.textures[2] != NULL && mlx->map.textures[3] != NULL)
-		{
-			free(mlx->map.textures[0]);
-			free(mlx->map.textures[1]);
-			free(mlx->map.textures[2]);
-			free(mlx->map.textures[3]);
-		}
+	if (mlx->map.texture)
+	{
+		for (int i = 0; i < 4; i++)
+			free(mlx->map.texture[i]);
+		free(mlx->map.texture);
+	}
 }
 
 void load_textures(t_mlx *mlx)
 {
-    mlx->map.textures[0] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/north.png");
-    mlx->map.textures[1] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/south.png");
-    mlx->map.textures[2] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/east.png");
-    mlx->map.textures[3] = mlx_load_png("/Users/med-dahr/Desktop/Cub3d/texture/west.png");
+    mlx->map.texture = malloc(4 * sizeof(mlx_texture_t *));
+    mlx->map.texture[0] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/north.png");
+    mlx->map.texture[1] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/south.png");
+    mlx->map.texture[2] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/east.png");
+    mlx->map.texture[3] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/west.png");
 
-    if (!mlx->texture.north || !mlx->texture.south || 
-        !mlx->texture.east || !mlx->texture.west)
+    for (int i = 0; i < 4; i++)
     {
-        printf("Error loading textures!\n");
-        exit(1);
+        if (!mlx->map.textures[i])
+        {
+            printf("Error loading texture %d!\n", i);
+            exit(1);
+        }
     }
+}
+
+float	normal_angl(double angle)
+{
+	angle = fmod(angle, M_PI * 2);
+	if (angle < 0)
+		angle = M_PI * 2 + angle;
+	return (angle);
+}
+
+void	move_player(mlx_key_data_t data, void *param)
+{
+	t_mlx		*mlx;
+	int			move;
+
+	move = 10;
+	mlx = (t_mlx *)param;
+	if (data.key == MLX_KEY_ESC)
+		mlx_close_window(mlx->mlx);
+	if (data.key == MLX_KEY_W)
+	{
+		if (!wall(mlx, mlx->player.x + cos(mlx->player.alpha) * move, mlx->player.y))
+			mlx->player.x += cos(mlx->player.alpha) * move;
+		if (!wall(mlx, mlx->player.x, mlx->player.y - sin(mlx->player.alpha) * move))
+			mlx->player.y -= sin(mlx->player.alpha) * move;
+	}
+	if (data.key == MLX_KEY_S)
+	{
+		if (!wall(mlx, mlx->player.x - cos(mlx->player.alpha) * move, mlx->player.y))
+			mlx->player.x -= cos(mlx->player.alpha) * move;
+		if (!wall(mlx, mlx->player.x, mlx->player.y + sin(mlx->player.alpha) * move))
+			mlx->player.y += sin(mlx->player.alpha) * move;
+	}
+	if (data.key == MLX_KEY_D)
+	{
+		if (!wall(mlx, mlx->player.x + sin(mlx->player.alpha) * move, mlx->player.y))
+			mlx->player.x += sin(mlx->player.alpha) * move;
+		if (!wall(mlx, mlx->player.x, mlx->player.y - cos(mlx->player.alpha) * move))
+			mlx->player.y += cos(mlx->player.alpha) * move;
+	}
+	if (data.key == MLX_KEY_A)
+	{
+		if (!wall(mlx, mlx->player.x - sin(mlx->player.alpha) * move, mlx->player.y))
+			mlx->player.x -= sin(mlx->player.alpha) * move;
+		if (!wall(mlx, mlx->player.x, mlx->player.y + cos(mlx->player.alpha) * move))
+			mlx->player.y -= cos(mlx->player.alpha) * move;
+	}
+	if (data.key == MLX_KEY_R_RIGHT)
+		mlx->player.alpha += 0.1;
+	if (data.key == MLX_KEY_R_LEFT)	
+		mlx->player.alpha -= 0.1;
+	mlx->player.alpha = normal_angl(mlx->player.alpha);
+	draw(mlx);
 }
 
 int main(int ac, char **av)
@@ -54,36 +108,13 @@ int main(int ac, char **av)
 		check_file_type(av[1]);
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
-		load_textures(&mlx);
 		// print(&mlx);
+		load_textures(&mlx);
 		__create_window(&mlx);
 		draw(&mlx);
-		mlx_key_hook(mlx.mlx, player_move, &mlx);
+		mlx_key_hook(mlx.mlx, move_player, &mlx);
     	mlx_loop(mlx.mlx);
-		free_textures(&mlx);
 	}
 	else
 		__error(0, 0);
-
-	(void)map;
-	(void)player;
-
-	return (0);
 }
-
-// Main entry point for the game
-// int main(int ac, char **av)
-// {
-//     t_data data;
-
-//     check_requirements(ac, av, &data);
-//     init_mlx_elements(&data);
-//     init_textures(&data); // Initialize textures
-
-//     mlx_loop_hook(data.mlx, ft_loop, &data);
-//     mlx_loop(data.mlx);
-
-//     free_textures(&data); // Free textures after game loop ends
-//     clean_all(&data);
-//     return 0;
-// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bbadda <bbadda@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:51:12 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/06 10:35:00 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:11:40 by bbadda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ char	*get_part(char *line, int part)
 static void	__allocate_for_me(t_mlx *mlx)
 {
 	mlx->map.map = (char **)malloc(mlx->map.col * sizeof(char *));
-	mlx->map.textures = (mlx_texture_t **)malloc(4 * sizeof(mlx_texture_t *));
+	mlx->map.textures = (char **)malloc(4 * sizeof(char *));
 	mlx->map.colors = (char **)malloc(2 * sizeof(char *));
 }
 
 static void	__textures(t_mlx *mlx, char *line, int *t)
 {
-	mlx->map.textures[(*t)++] = (mlx_texture_t *)get_part(line, 0);
+	mlx->map.textures[(*t)++] = get_part(line, 0);
 }
 
 static void	__colors(t_mlx *mlx, char *line, int *c)

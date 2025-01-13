@@ -7,7 +7,6 @@ LIB = MLX/build/libglfw3.a MLX/build/libmlx42.a  -framework Cocoa -framework Ope
 SRCS= 	./mandatory/main.c ./mandatory/utils.c ./mandatory/get_next_line.c\
 		./mandatory/get_next_line_utils.c ./mandatory/print.c ./mandatory/map.c\
 		./mandatory/get_colors.c ./mandatory/draw.c ./mandatory/init_things.c\
-		./mandatory/player_move.c\
 		./libc/parse_split.c ./libc/parse_substr.c ./libc/small_functions.c\
 
 GREEN = "\033[32m"
