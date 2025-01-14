@@ -57,6 +57,8 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "__node_handle": "c"
-  }
+    "__node_handle": "c",
+    "cub3d.h": "c"
+  },
+  "C_Cpp.errorSquiggles": "disabled"
 }

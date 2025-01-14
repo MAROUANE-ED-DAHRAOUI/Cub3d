@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/13 12:48:51 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/14 18:16:33 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,18 +115,25 @@ void	draw_player(t_mlx *mlx, int x0, int y0, int color)
 	}
 }
 
+int	get_rgba(uint8_t *color)
+{
+	return (color[0] << 24 | color[1] << 16 | color[2] << 8 | color[3]);
+}
+
 void	draw_rays(t_mlx *mlx, float ray_angl, int i_x)
 {
 	float	ray_x;
 	float	ray_y;
 	float	dist;
 	float	h;
-	
+	double x_texture = 0.0;
+	double y_texture = 0.0;
+	double color = 0.0;
 	ray_x = mlx->player.x;
 	ray_y = mlx->player.y;
 	while (!wall(mlx, ray_x, ray_y))
 	{
-		mlx_put_pixel(mlx->img.img, ray_x, ray_y, 0XFF0000FF);
+		// mlx_put_pixel(mlx->img.img, ray_x, ray_y, 0XFF0000FF);
 		ray_x += cos(ray_angl);
 		ray_y -= sin(ray_angl);
 	}
@@ -139,9 +146,17 @@ void	draw_rays(t_mlx *mlx, float ray_angl, int i_x)
 	float end_d = (HEIGHT / 2) + (h / 2);
 	if(end_d > HEIGHT)
 		end_d = HEIGHT;
+	//Horizontal x_texture = (ray_x / size) - floor(ray_x / size) * mlx->textures->ea->width;
+	// vertical ? x_texture = (y_projection / wall_height) - floor(y_projection / wall_height) * wisth_image;
 	while (i_y < end_d)
 	{
-		mlx_put_pixel(mlx->img.img,i_x,i_y,0XFF0000FF);
+		y_texture = i_y - start_d / (end_d - start_d) * mlx->textures->ea->height;
+		if (i_y >= 0 && i_y < HEIGHT)
+		{
+			if ((int)ray_y * mlx->textures->ea->width + (int)ray_x <= mlx->textures->ea->width * mlx->textures->ea->height)//bax mayfoutx pixels dyal image
+				color = get_rgba(&mlx->textures->ea->pixels[(int)y_texture * mlx->textures->ea->width + (int)x_texture * 4]);// bax yjib pixel == 4 byte
+			mlx_put_pixel(mlx->img.img,i_x,i_y,color);
+		}
 		i_y++;
 	}
 }

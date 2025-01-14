@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/13 11:43:49 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/14 14:46:27 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,31 @@
 
 void free_textures(t_mlx *mlx)
 {
-	if (mlx->map.texture)
-	{
-		for (int i = 0; i < 4; i++)
-			free(mlx->map.texture[i]);
-		free(mlx->map.texture);
-	}
+		mlx_delete_texture(mlx->textures->no);
+		mlx_delete_texture(mlx->textures->so);
+		mlx_delete_texture(mlx->textures->we);
+		mlx_delete_texture(mlx->textures->ea);
+		free(mlx->textures);
 }
+
 
 void load_textures(t_mlx *mlx)
 {
-    mlx->map.texture = malloc(4 * sizeof(mlx_texture_t *));
-    mlx->map.texture[0] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/north.png");
-    mlx->map.texture[1] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/south.png");
-    mlx->map.texture[2] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/east.png");
-    mlx->map.texture[3] = mlx_load_png("/Users/med-dahr/Cub3D/cub3d22/texture/west.png");
+	mlx->textures = malloc(sizeof(t_texture));
+	if (!mlx->textures)
+	{
+		printf("Failed to allocate memory for textures");
+		exit(EXIT_FAILURE);
+	}
+    mlx->textures->no = mlx_load_png("/Users/med-dahr/Cub3d/texture/north.png");
+    mlx->textures->so = mlx_load_png("/Users/med-dahr/Cub3d/texture/south.png");
+    mlx->textures->we = mlx_load_png("/Users/med-dahr/Cub3d/texture/west.png");
+    mlx->textures->ea = mlx_load_png("/Users/med-dahr/Cub3d/texture/east.png");
 
-    for (int i = 0; i < 4; i++)
+    if (!mlx->textures->no || !mlx->textures->so || !mlx->textures->we || !mlx->textures->ea)
     {
-        if (!mlx->map.textures[i])
-        {
-            printf("Error loading texture %d!\n", i);
-            exit(1);
-        }
+        printf("Failed to load textures");
+        exit(EXIT_FAILURE);
     }
 }
 

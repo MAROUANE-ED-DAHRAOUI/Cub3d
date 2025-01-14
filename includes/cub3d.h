@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:45:25 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/13 11:20:15 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:32:45 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,5 +74,7 @@ void        player_position(t_mlx *mlx);
 void		get_cordinante(t_mlx *mlx, t_cord *cord);
 
 void    print(t_mlx *mlx);
+float	normal_angl(double angle);
+ void free_textures(t_mlx *mlx);
 
 #endif
