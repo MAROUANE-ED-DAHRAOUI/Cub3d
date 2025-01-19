@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 13:07:35 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 13:10:00 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,11 +200,12 @@ void    draw(t_mlx *mlx)
     {
         normal_angl(rangle);
         ray = cast_ray(mlx, rangle);
-        line_height = size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
+        line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
 		pxl.endy = (HEIGHT / 2) + (line_height / 2);
         draw_rays(mlx, index);
 		rangle += fov_step;
+        index++;
     }
     draw_map(mlx);
 	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
