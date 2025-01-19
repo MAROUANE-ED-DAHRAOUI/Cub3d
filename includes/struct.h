@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 21:11:59 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/17 13:02:52 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 12:45:44 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 
 typedef struct s_cord
 {
-	int	x;
-	int	y;
+	int	x; // x coordinate
+	int	y; // y coordinate
 }t_cord;
 
 typedef struct s_point {
-    float x;
-    float y;
+    float x;  // x coordinate
+    float y; // y coordinate
 } t_point;
 
 typedef struct s_pxl
@@ -34,9 +34,12 @@ typedef struct s_pxl
 typedef struct s_ray 
 {
 	float h;
-    float distance;          // Distance to the wall
+    double distance;          // Distance to the wall
     t_point wall_hit;        // Coordinates of the wall hit
-    bool 	vertical;          // True if the wall hit was vertical
+    bool 	vertical;         // True if the wall hit was vertical
+	double	ray_x;			// x coordinate of the ray
+	double	ray_y;			// y coordinate of the ray
+	int		looks[4];		// 0 = up, 1 = down, 2 = left, 3 = right
 } t_ray;
 
 
@@ -69,8 +72,8 @@ typedef struct s_player
 {
 	float		x;
 	float		y;
-	float		position;
-	float	alpha;
+	double		position;
+	float		alpha;
 	
 }t_player;
 
@@ -95,6 +98,7 @@ typedef struct s_mlx
 	t_pxl		pxl;
 	unsigned int *texture_pixels;
 	double		plyDir;
+	double		dprojection;
 }t_mlx;
 
 # endif

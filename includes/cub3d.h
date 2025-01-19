@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:45:25 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/17 10:24:38 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 11:33:55 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <fcntl.h>
 # include <math.h>
 
+#define  FOV 60
 # define PI 3.1415926535897
 # define size 40
 # define BUFFER_SIZE 42
@@ -74,7 +75,9 @@ void        player_position(t_mlx *mlx);
 void		get_cordinante(t_mlx *mlx, t_cord *cord);
 
 void    print(t_mlx *mlx);
-float	normal_angl(double angle);
- void free_textures(t_mlx *mlx);
+double 	normal_angl(double angle);
+void free_textures(t_mlx *mlx);
+t_ray cast_ray(t_mlx *mlx, double rangle);
+
 
 #endif

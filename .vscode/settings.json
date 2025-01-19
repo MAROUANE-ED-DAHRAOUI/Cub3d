@@ -59,7 +59,10 @@
   "files.associations": {
     "__node_handle": "c",
     "cub3d.h": "c",
-    "chrono": "c"
+    "chrono": "c",
+    "algorithm": "c",
+    "limits": "c",
+    "ratio": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

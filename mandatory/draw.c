@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/17 13:02:18 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 13:07:35 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ bool	wall(t_mlx *mlx, float py, float px)
 	int	x;
 	int	y;
 
-	x = px/ size;
-	y = py/ size;
+	x = px / size;
+	y = py / size;
 	if (mlx->map.map[x][y] == '1')
 		return (true);
 	return (false);
@@ -122,7 +122,7 @@ unsigned int get_rgba(uint8_t *color)
     return (color[0] << 24 | color[1] << 16 | color[2] << 8 | color[3]);
 }
 
-static void draw_vertical_line(t_mlx *mlx, int i_x, double *coords, unsigned int color)
+void draw_vertical_line(t_mlx *mlx, int i_x, double *coords, unsigned int color)
 {
 	double	y;
 
@@ -135,58 +135,25 @@ static void draw_vertical_line(t_mlx *mlx, int i_x, double *coords, unsigned int
 	}
 }
 
-static void	draw_rays(t_mlx *mlx, float ray_angl, int i_x)
+void	draw_rays(t_mlx *mlx, int i_x)
 {
-    float ray_x = mlx->player.x;
-    float ray_y = mlx->player.y;
-    int x_texture = 0;
-    int color = 0;
-    double	coords[2];
-    double    tstep;
-    int     index = 0;
+    mlx->rays->ray_x = mlx->player.x;
+    mlx->rays->ray_y = mlx->player.y;
+    int          x_texture = 0;
+    int             color = 0;
+    double	        coords[2];
+    double          tstep;
+    int    index = 0;
 
-    // Cast the ray
-    while (!wall(mlx, ray_x, ray_y))
-    {
-        ray_x += cos(ray_angl);
-        ray_y -= sin(ray_angl);
-    }
-
-    // Determine if the ray hit a vertical or horizontal wall
-    mlx->rays->vertical = fabs(ray_x - mlx->player.x) < fabs(ray_y - mlx->player.y);
-
-    // Compute texture selection
-    if(mlx->rays->vertical)
-        mlx->textures->current_texture = mlx->textures->we;
-    else
-        mlx->textures->current_texture = mlx->textures->ea;
-
-    if (cos(ray_angl) < 0)
-        mlx->textures->current_texture = mlx->textures->no;
-    else if (sin(ray_angl) > 0)
-        mlx->textures->current_texture = mlx->textures->so;
-
-    // Distance and scaling calculations
-    mlx->rays->distance = sqrt(pow(ray_x - mlx->player.x, 2) + pow(ray_y - mlx->player.y, 2));
-    mlx->rays->h = (size / mlx->rays->distance) * ((HEIGHT / 2) / tan(PI / 6));
-
-    mlx->pxl.starty = (HEIGHT / 2) - (mlx->rays->h / 2);
-    if (mlx->pxl.starty < 0)
-        mlx->pxl.starty = 0;
-
-    mlx->pxl.endy = (HEIGHT / 2) + (mlx->rays->h / 2);
-    if (mlx->pxl.endy > HEIGHT)
-        mlx->pxl.endy = HEIGHT;
-
-    mlx->pxl.i_y = mlx->pxl.starty;
+    // Calculate the distance to the wall
     tstep = (mlx->pxl.endy - mlx->pxl.starty) / size;
     
     // Calculate initial x_texture coordinate
-	if (!mlx->rays->vertical) 
-    	x_texture = (ray_x / size) - floor(ray_x / size) * mlx->textures->ea->width;
+	if (mlx->rays->vertical == false) 
+    	x_texture = (int)mlx->rays->ray_x % size;
 	else
-    	x_texture = (ray_y /  mlx->textures->ea->height) - floor(ray_y / mlx->textures->ea->height) * mlx->textures->ea->width;
-
+    	x_texture = (int)mlx->rays->ray_y % size;
+    
     while(index < size)
     {
         coords[0] = mlx->pxl.starty;
@@ -198,7 +165,17 @@ static void	draw_rays(t_mlx *mlx, float ray_angl, int i_x)
     }
 }
 
-return (deg * (PI / 180));
+void      calculate_ray_and_fov(t_mlx *mlx, double *rangle, double *fov_step)
+{
+    *rangle = mlx->player.position - 40;
+    *fov_step = FOV / (double)WIDTH;
+}
+
+double computeDeg(double rad)
+{
+    return (rad * (PI / 180));
+}
+
 void    draw(t_mlx *mlx)
 {
     double	rangle;
@@ -208,11 +185,12 @@ void    draw(t_mlx *mlx)
 	t_pxl	pxl;
 	float	ray_x;
 	float	ray_y;
-	float	ray_angl;
-	int		i;
+    t_ray   ray;
 
+    line_height = 0;
 	ray_x = mlx->player.x;
 	ray_y = mlx->player.y;
+    mlx->dprojection = ((double)WIDTH / 2) / tan(computeDeg(FOV / 2));
 	if (mlx->img.img)
 		mlx_delete_image(mlx->mlx, mlx->img.img);
 	mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
@@ -220,12 +198,13 @@ void    draw(t_mlx *mlx)
     index = 0;
     while(index < WIDTH)
     {
-        normal_angl(&rangle);
-        max = cast_ray(mlx, rangle);
-        line_height = size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->plyDir)) / tan(PI / 6));
+        normal_angl(rangle);
+        ray = cast_ray(mlx, rangle);
+        line_height = size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
-        draw_rays(mlx, rangle, index);
-        rangle += fov_step;
+		pxl.endy = (HEIGHT / 2) + (line_height / 2);
+        draw_rays(mlx, index);
+		rangle += fov_step;
     }
     draw_map(mlx);
 	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);

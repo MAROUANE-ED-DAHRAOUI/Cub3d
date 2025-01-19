@@ -6,11 +6,28 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/15 11:50:15 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 11:38:16 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+
+void	*ft_calloc(size_t count, size_t _size)
+{
+	char	*res;
+	size_t	i;
+
+	i = 0;
+	res = (char *)malloc(count * _size);
+	if (!res)
+		return (NULL);
+	while (i < count * _size)
+	{
+		res[i] = 0;
+		i++;
+	}
+	return (res);
+}
 
 void free_textures(t_mlx *mlx)
 {
@@ -28,6 +45,35 @@ void free_textures(t_mlx *mlx)
         free(mlx->textures); // Free the allocated structure
         mlx->textures = NULL;
     }
+}
+
+unsigned int	create_rgba(int r, int g, int b, int a)
+{
+	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
+	{
+		printf("[failed: invalid color]\n");
+		exit(EXIT_FAILURE);
+	}
+	return (r << 24 | g << 16 | b << 8 | a);
+}
+
+unsigned int	*convert_tex_to_px(mlx_texture_t *tex)
+{
+	unsigned int	x;
+	unsigned int	y;
+	unsigned int	*pixels;
+
+	x = 0;
+	y = 0;
+	pixels = ft_calloc(tex->width * tex->height, sizeof(unsigned int));
+	while (x < (tex->width * tex->height))
+	{
+		pixels[x] = create_rgba(tex->pixels[y], tex->pixels[y + 1],
+				tex->pixels[y + 2], tex->pixels[y + 3]);
+		y += 4;
+		x++;
+	}
+	return (pixels);
 }
 
 void load_textures(t_mlx *mlx)
@@ -53,9 +99,14 @@ void load_textures(t_mlx *mlx)
         free_textures(mlx); // Free any successfully loaded textures
         exit(EXIT_FAILURE);
     }
+	mlx->texture_pixels = ft_calloc(4, sizeof(unsigned int *));
+	mlx->texture_pixels = convert_tex_to_px(mlx->textures->no);
+	mlx->texture_pixels = convert_tex_to_px(mlx->textures->ea);
+	mlx->texture_pixels = convert_tex_to_px(mlx->textures->we);
+	mlx->texture_pixels = convert_tex_to_px(mlx->textures->so);
 }
 
-float	normal_angl(double angle)
+double	normal_angl(double angle)
 {
 	angle = fmod(angle, M_PI * 2);
 	if (angle < 0)
