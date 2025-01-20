@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 11:38:16 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/19 14:37:29 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,11 @@ unsigned int	create_rgba(int r, int g, int b, int a)
 	return (r << 24 | g << 16 | b << 8 | a);
 }
 
+
 unsigned int	*convert_tex_to_px(mlx_texture_t *tex)
 {
-	unsigned int	x;
-	unsigned int	y;
+	unsigned int				x;
+	unsigned int				y;
 	unsigned int	*pixels;
 
 	x = 0;
@@ -100,17 +101,18 @@ void load_textures(t_mlx *mlx)
         exit(EXIT_FAILURE);
     }
 	mlx->texture_pixels = ft_calloc(4, sizeof(unsigned int *));
-	mlx->texture_pixels = convert_tex_to_px(mlx->textures->no);
-	mlx->texture_pixels = convert_tex_to_px(mlx->textures->ea);
-	mlx->texture_pixels = convert_tex_to_px(mlx->textures->we);
-	mlx->texture_pixels = convert_tex_to_px(mlx->textures->so);
+	mlx->texture_pixels[0] = *convert_tex_to_px(mlx->textures->no);
+	mlx->texture_pixels[1] = *convert_tex_to_px(mlx->textures->ea);
+	mlx->texture_pixels[2] = *convert_tex_to_px(mlx->textures->we);
+	mlx->texture_pixels[3] = *convert_tex_to_px(mlx->textures->so);
+
 }
 
 double	normal_angl(double angle)
 {
-	angle = fmod(angle, M_PI * 2);
+	angle = fmod(angle, PI * 2);
 	if (angle < 0)
-		angle = M_PI * 2 + angle;
+		angle += PI * 2;;
 	return (angle);
 }
 

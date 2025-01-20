@@ -6,10 +6,23 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 13:10:00 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/20 20:26:54 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// void	draw_square(t_mlx *mlx, int x0, int y0, int color)
+// {
+// 	int	x_max;
+// 	int	y_max;
+	
+// 	x_max = SIZE + x0;
+// 	y_max = SIZE + y0;
+// 	for (int i = x0; i < x_max; i++)
+// 	{
+// 		for (int j = y0; j < y_max; j++)
+// 			mlx_put_pixel(mlx->img.img, i, j, color);	
+// 	}
+// }
 #include "../includes/cub3d.h"
 
 bool	wall(t_mlx *mlx, float py, float px)
@@ -38,19 +51,6 @@ void	draw_square(t_mlx *mlx, int x0, int y0, int color)
 	}
 }
 
-// void	draw_square(t_mlx *mlx, int x0, int y0, int color)
-// {
-// 	int	x_max;
-// 	int	y_max;
-	
-// 	x_max = SIZE + x0;
-// 	y_max = SIZE + y0;
-// 	for (int i = x0; i < x_max; i++)
-// 	{
-// 		for (int j = y0; j < y_max; j++)
-// 			mlx_put_pixel(mlx->img.img, i, j, color);	
-// 	}
-// }
 
 void draw_square_scaled(t_mlx *mlx, int x0, int y0, int color)
 {
@@ -143,7 +143,7 @@ void	draw_rays(t_mlx *mlx, int i_x)
     int             color = 0;
     double	        coords[2];
     double          tstep;
-    int    index = 0;
+    int             index = 0;
 
     // Calculate the distance to the wall
     tstep = (mlx->pxl.endy - mlx->pxl.starty) / size;
@@ -153,11 +153,18 @@ void	draw_rays(t_mlx *mlx, int i_x)
     	x_texture = (int)mlx->rays->ray_x % size;
 	else
     	x_texture = (int)mlx->rays->ray_y % size;
+
+if (x_texture < 0 || x_texture >= size) {
+    printf("Error: Invalid texture index x_texture = %d\n", x_texture);
+    return;
+}
+
     
     while(index < size)
     {
         coords[0] = mlx->pxl.starty;
         coords[1] = mlx->pxl.starty + tstep;
+        printf("coords[0] = %f, coords[1] = %f\n, x_texture=%d\n", coords[0], coords[1], x_texture);
         color = mlx->texture_pixels[size * index + x_texture];
         draw_vertical_line(mlx, i_x, coords, color);
         mlx->pxl.starty += tstep;
@@ -167,7 +174,7 @@ void	draw_rays(t_mlx *mlx, int i_x)
 
 void      calculate_ray_and_fov(t_mlx *mlx, double *rangle, double *fov_step)
 {
-    *rangle = mlx->player.position - 40;
+    *rangle = mlx->player.position - 0;
     *fov_step = FOV / (double)WIDTH;
 }
 
@@ -176,37 +183,62 @@ double computeDeg(double rad)
     return (rad * (PI / 180));
 }
 
-void    draw(t_mlx *mlx)
+
+void draw(t_mlx *mlx) 
 {
-    double	rangle;
-	double	fov_step;
-	double	line_height;
-	int		index;
-	t_pxl	pxl;
-	float	ray_x;
-	float	ray_y;
-    t_ray   ray;
+    double rangle;
+    double fov_step;
+    double line_height;
+    int index;
+    t_pxl pxl;
+    float ray_x;
+    float ray_y;
+    t_ray ray;
 
     line_height = 0;
-	ray_x = mlx->player.x;
-	ray_y = mlx->player.y;
+    ray_x = mlx->player.x;
+    ray_y = mlx->player.y;
     mlx->dprojection = ((double)WIDTH / 2) / tan(computeDeg(FOV / 2));
-	if (mlx->img.img)
-		mlx_delete_image(mlx->mlx, mlx->img.img);
-	mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
+
+
+    if (mlx->img.img)
+        mlx_delete_image(mlx->mlx, mlx->img.img);
+    mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
+
     calculate_ray_and_fov(mlx, &rangle, &fov_step);
     index = 0;
-    while(index < WIDTH)
-    {
+
+    while (index < WIDTH) {
         normal_angl(rangle);
         ray = cast_ray(mlx, rangle);
+
+        if (mlx->rays->distance == 0) {
+            printf("Error: Distance is zero at index %d\n", index);
+            return;
+        }
+
         line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
+        if (isnan(line_height) || isinf(line_height)) {
+            printf("line_height computation failed: size = %d, distance = %f, cos = %f\n",
+            size, mlx->rays->distance, cos(computeDeg(rangle - mlx->player.position)));
+            return;
+        }
+
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
-		pxl.endy = (HEIGHT / 2) + (line_height / 2);
+        pxl.endy = (HEIGHT / 2) + (line_height / 2);
+
+        if (isnan(pxl.starty) || isinf(pxl.starty) || isnan(pxl.endy) || isinf(pxl.endy)) {
+            printf("Error: Invalid pixel coordinates \nat index %d, line_height: %f\n", index, line_height);
+            return;
+        }
+
+        printf("line_height = %f,\n pxl.starty = %f,\n pxl.endy = %f\n, index = %d\n, dprojection = %f\n",
+               line_height, pxl.starty, pxl.endy, index, mlx->dprojection);
+
         draw_rays(mlx, index);
-		rangle += fov_step;
+        rangle += fov_step;
         index++;
     }
     draw_map(mlx);
-	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
+    mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
 }

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 10:19:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2025/01/19 11:24:03 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/20 13:21:58 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,13 +195,18 @@ t_ray cast_ray(t_mlx *mlx, double rangle)
     t_ray step_ver;
 
 
-    ray_h.ray_x = mlx->player.x * size;
-    ray_h.ray_y = mlx->player.y * size;
+    ray_h.ray_x = mlx->player.x;
+    ray_h.ray_y = mlx->player.y;
+	printf("ray_h.ray_x = %f,       ray_h.ray_y = %f\n", ray_h.ray_x, ray_h.ray_y);
     ft_Copymem(&ray_p, &ray_h, sizeof(t_ray));
     ray_p = ver_intercept(mlx, rangle, ray_p);
     ray_h = hor_intercept(mlx, rangle, ray_h);
     step_ver = ver_intercept(mlx, rangle, ray_p);
     step_hor = hor_intercept(mlx, rangle, ray_h);
+
+	printf("Vertical ray: x = %f, y = %f\n", ray_p.ray_x, ray_p.ray_y);
+	printf("Horizontal ray: x = %f, y = %f\n", ray_h.ray_x, ray_h.ray_y);
+
 
     ft_finder(step_ver.ray_x - ray_p.ray_x, step_ver.ray_y - ray_p.ray_y,
 		&step_ver, mlx);
