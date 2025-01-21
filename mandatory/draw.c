@@ -10,32 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// void	draw_square(t_mlx *mlx, int x0, int y0, int color)
-// {
-// 	int	x_max;
-// 	int	y_max;
-	
-// 	x_max = SIZE + x0;
-// 	y_max = SIZE + y0;
-// 	for (int i = x0; i < x_max; i++)
-// 	{
-// 		for (int j = y0; j < y_max; j++)
-// 			mlx_put_pixel(mlx->img.img, i, j, color);	
-// 	}
-// }
 #include "../includes/cub3d.h"
 
-bool	wall(t_mlx *mlx, float py, float px)
-{
-	int	x;
-	int	y;
+// bool	wall(t_mlx *mlx, float py, float px)
+// {
+// 	int	x;
+// 	int	y;
 
-	x = px / size;
-	y = py / size;
-	if (mlx->map.map[x][y] == '1')
-		return (true);
-	return (false);
-}
+// 	x = px / size;
+// 	y = py / size;
+// 	if (mlx->map.map[x][y] == '1')
+// 		return (true);
+// 	return (false);
+// }
 
 void	draw_square(t_mlx *mlx, int x0, int y0, int color)
 {
@@ -183,6 +170,20 @@ double computeDeg(double rad)
     return (rad * (PI / 180));
 }
 
+t_ray initialRay()
+{
+    t_ray ray;
+
+    ray.distance = 0;
+    ray.ray_x = 0;
+    ray.ray_y = 0;
+    ray.vertical = false;
+    ray.looks[0] = 0;
+	ray.looks[1] = 0;
+	ray.looks[2] = 0;
+	ray.looks[3] = 0;
+    return (ray);
+}
 
 void draw(t_mlx *mlx) 
 {
@@ -194,7 +195,8 @@ void draw(t_mlx *mlx)
     float ray_x;
     float ray_y;
     t_ray ray;
-
+    
+    ray = initialRay();
     line_height = 0;
     ray_x = mlx->player.x;
     ray_y = mlx->player.y;

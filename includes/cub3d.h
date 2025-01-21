@@ -25,9 +25,10 @@
 
 #define  FOV 60
 # define PI 3.1415926535897
+#define  WALL_PADDING 10 
 # define size 40
 # define BUFFER_SIZE 42
-# define WIDTH 1900
+# define WIDTH 1400
 # define HEIGHT 1000
 # define MLX_KEY_ESC 256
 # define MLX_KEY_W 87
@@ -37,6 +38,8 @@
 # define MLX_KEY_R_RIGHT 263
 # define MLX_KEY_R_LEFT 262
 #define MINI_MAP_SCALE 0.2 // Mini-map is 20% of the actual size
+#define SPEED_ROTATE 0.1
+#define SPEED_PLY 0.1
 
 int			get_colors(char *str);
 size_t		my_strlen(const char *str);
@@ -71,13 +74,17 @@ void        draw(t_mlx *mlx);
 bool        wall(t_mlx *mlx, float px, float py);
 //------------------------init_functions-----------------------------------//
 void        __create_window(t_mlx *mlx);
-void        player_position(t_mlx *mlx);
+int	        player_position(t_mlx *mlx, int i, int j);
 void		get_cordinante(t_mlx *mlx, t_cord *cord);
 
 void    print(t_mlx *mlx);
 double 	normal_angl(double angle);
-void free_textures(t_mlx *mlx);
-t_ray cast_ray(t_mlx *mlx, double rangle);
+void    free_textures(t_mlx *mlx);
+t_ray   cast_ray(t_mlx *mlx, double rangle);
+int	     PlayerCounter(t_mlx *mlx);
+char	*ft_strchr(const char *s, int c);
+int	space_surrounding(t_mlx *mlx, int i, int j);
+
 
 
 #endif

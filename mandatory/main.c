@@ -58,7 +58,7 @@ unsigned int	create_rgba(int r, int g, int b, int a)
 }
 
 
-unsigned int	*convert_tex_to_px(mlx_texture_t *tex)
+unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 {
 	unsigned int				x;
 	unsigned int				y;
@@ -66,11 +66,11 @@ unsigned int	*convert_tex_to_px(mlx_texture_t *tex)
 
 	x = 0;
 	y = 0;
-	pixels = ft_calloc(tex->width * tex->height, sizeof(unsigned int));
-	while (x < (tex->width * tex->height))
+	pixels = ft_calloc(texture->width * texture->height, sizeof(unsigned int));
+	while (x < (texture->width * texture->height))
 	{
-		pixels[x] = create_rgba(tex->pixels[y], tex->pixels[y + 1],
-				tex->pixels[y + 2], tex->pixels[y + 3]);
+		pixels[x] = create_rgba(texture->pixels[y], texture->pixels[y + 1],
+				texture->pixels[y + 2], texture->pixels[y + 3]);
 		y += 4;
 		x++;
 	}
@@ -101,11 +101,16 @@ void load_textures(t_mlx *mlx)
         exit(EXIT_FAILURE);
     }
 	mlx->texture_pixels = ft_calloc(4, sizeof(unsigned int *));
+	if(mlx->texture_pixels == NULL)
+	{
+		fprintf(stderr, "Failed to allocate memory for texture pixels\n");
+		free_textures(mlx);
+		exit(EXIT_FAILURE);
+	}
 	mlx->texture_pixels[0] = *convert_tex_to_px(mlx->textures->no);
 	mlx->texture_pixels[1] = *convert_tex_to_px(mlx->textures->ea);
 	mlx->texture_pixels[2] = *convert_tex_to_px(mlx->textures->we);
 	mlx->texture_pixels[3] = *convert_tex_to_px(mlx->textures->so);
-
 }
 
 double	normal_angl(double angle)
@@ -116,49 +121,46 @@ double	normal_angl(double angle)
 	return (angle);
 }
 
+static void	ft_move(t_mlx *mlx, double px, double py)
+{
+	double	ppx;
+	double	ppy;
+
+	ppx = (mlx->player.x * size) + (px * SPEED_PLY);
+	ppy = (mlx->player.y * size) + (py * SPEED_PLY);
+	if (mlx->map.map[(int)((ppy + WALL_PADDING) / size)][(int)
+			(ppx / size)] == '1' || mlx->map.map[(int)(ppy / size)]
+			[(int)((ppx + WALL_PADDING) / size)] == '1' || mlx->map.map[(int)
+			((ppy - WALL_PADDING) / size)][(int)
+			(ppx / size)] == '1' || mlx->map.map[(int)(ppy / size)]
+			[(int)((ppx - WALL_PADDING) / size)] == '1')
+		return ;
+	mlx->player.x = ((mlx->player.x * size)
+			+ (px * SPEED_PLY)) / size;
+	mlx->player.y = ((mlx->player.y * size)
+			+ (py * SPEED_PLY)) / size;
+}
+
 void	move_player(mlx_key_data_t data, void *param)
 {
-	t_mlx		*mlx;
-	int			move;
+	double	rangle;
+	t_mlx *mlx;
 
-	move = 10;
-	mlx = (t_mlx *)param;
-	if (data.key == MLX_KEY_ESC)
-		mlx_close_window(mlx->mlx);
-	if (data.key == MLX_KEY_W)
-	{
-		if (!wall(mlx, mlx->player.x + cos(mlx->player.alpha) * move, mlx->player.y))
-			mlx->player.x += cos(mlx->player.alpha) * move;
-		if (!wall(mlx, mlx->player.x, mlx->player.y - sin(mlx->player.alpha) * move))
-			mlx->player.y -= sin(mlx->player.alpha) * move;
-	}
-	if (data.key == MLX_KEY_S)
-	{
-		if (!wall(mlx, mlx->player.x - cos(mlx->player.alpha) * move, mlx->player.y))
-			mlx->player.x -= cos(mlx->player.alpha) * move;
-		if (!wall(mlx, mlx->player.x, mlx->player.y + sin(mlx->player.alpha) * move))
-			mlx->player.y += sin(mlx->player.alpha) * move;
-	}
-	if (data.key == MLX_KEY_D)
-	{
-		if (!wall(mlx, mlx->player.x + sin(mlx->player.alpha) * move, mlx->player.y))
-			mlx->player.x += sin(mlx->player.alpha) * move;
-		if (!wall(mlx, mlx->player.x, mlx->player.y - cos(mlx->player.alpha) * move))
-			mlx->player.y += cos(mlx->player.alpha) * move;
-	}
-	if (data.key == MLX_KEY_A)
-	{
-		if (!wall(mlx, mlx->player.x - sin(mlx->player.alpha) * move, mlx->player.y))
-			mlx->player.x -= sin(mlx->player.alpha) * move;
-		if (!wall(mlx, mlx->player.x, mlx->player.y + cos(mlx->player.alpha) * move))
-			mlx->player.y -= cos(mlx->player.alpha) * move;
-	}
-	if (data.key == MLX_KEY_R_RIGHT)
-		mlx->player.alpha += 0.1;
-	if (data.key == MLX_KEY_R_LEFT)	
-		mlx->player.alpha -= 0.1;
-	mlx->player.alpha = normal_angl(mlx->player.alpha);
-	draw(mlx);
+	rangle = mlx->player.position;
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_W))
+		ft_move(mlx, cos(deg2rad(rangle)), -sin(deg2rad(rangle)));
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_S))
+		ft_move(mlx, -cos(deg2rad(rangle)), sin(deg2rad(rangle)));
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_A))
+		ft_move(mlx, sin(deg2rad(rangle)), cos(deg2rad(rangle)));
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_D))
+		ft_move(mlx, -sin(deg2rad(rangle)), -cos(deg2rad(rangle)));
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_ESCAPE))
+		exit(EXIT_SUCCESS);
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_RIGHT))
+		mlx->player.position = normalize_angle(mlx->player.position + SPEED_ROTATE);
+	if (mlx_is_key_down(mlx->mlx, MLX_KEY_LEFT))
+		mlx->player.position = normalize_angle(mlx->player.position - SPEED_ROTATE);
 }
 
 int main(int ac, char **av)
@@ -172,11 +174,18 @@ int main(int ac, char **av)
 	player = NULL;
     if (ac == 2)
 	{
-		map = malloc(sizeof(t_map));
 		check_file_type(av[1]);
+		map = malloc(sizeof(t_map));
+		if(map == NULL)
+			printf("Cant allocate map struct, increase the program break");
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
 		// print(&mlx);
+		if(PlayerCounter(&mlx) == 0)
+		{
+			fprintf(stderr, "There is a wrong in map\n");
+			return -1;
+		}
 		load_textures(&mlx);
 		__create_window(&mlx);
 		draw(&mlx);

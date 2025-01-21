@@ -14,59 +14,43 @@
 
 void	__create_window(t_mlx *mlx)
 {
-	player_position(mlx);
 	mlx->mlx = mlx_init(WIDTH, HEIGHT, "New Window", true);
 	mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
-	mlx->mini_img = mlx_new_image(mlx->mlx, 100, 100);
+	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
+	mlx_loop_hook(mlx->mlx, (void (*)(void *))draw, mlx);
 }
 
-void	get_position_angl(t_mlx *mlx)
+
+/**
+ * player_position - Checks the player's position on the map.
+ * @mlx: Pointer to the t_mlx structure containing the map information.
+ * @i: The row index of the player's position.
+ * @j: The column index of the player's position.
+ *
+ * This function verifies if the player's position is valid by checking the
+ * following conditions:
+ * 1. The player's position is marked by one of the characters 'N', 'S', 'E', or 'W'.
+ * 2. The player's position is not at the edge of the map.
+ * 3. The player's position is surrounded by walls.
+ *
+ * If any of these conditions are not met, an error message is printed and the
+ * function returns -1. Otherwise, the function returns 0.
+ *
+ * Return: 0 if the player's position is valid, -1 otherwise.
+ */
+int	player_position(t_mlx *mlx, int i, int j)
 {
-	if (mlx->player.position == 'N')
-		mlx->player.alpha = PI / 2;
-	if (mlx->player.position == 'S')
-		mlx->player.alpha = (3 * PI) / 2;
-	if (mlx->player.position == 'E')
-		mlx->player.alpha = 0;
-	if (mlx->player.position == 'W')
-		mlx->player.alpha = PI;
-}
-
-void	player_position(t_mlx *mlx)
-{   
-    t_cord  cord;
-
-    get_cordinante(mlx, &cord);
-	mlx->player.x = cord.x;
-	mlx->player.y = cord.y;
-	get_position_angl(mlx);
-}
-
-void	get_cordinante(t_mlx *mlx, t_cord *cord)
-{
-	int	i;
-	int	j;
-	int o = 0;
-    int p = 0;
-	i = 0;
-	while (i < mlx->map.col)
+	if (ft_strchr("NSEW", mlx->map.map[i][j]))
 	{
-		j = 0;
-		o  = 0;
-		while (mlx->map.map[i][j])
-		{
-			if (mlx->map.map[i][j] == 'N' || mlx->map.map[i][j] == 'W'
-				|| mlx->map.map[i][j] == 'E' || mlx->map.map[i][j] == 'S')
-			{
-				mlx->player.position = mlx->map.map[i][j];
-                cord->x = o;
-                cord->y = p;
-                return ;
-            }
-			j++;
-			o += 40;
-		}
-		p += 40;
-		i++;
-    }
+		if (space_surrounding(mlx, i, j) == -1)
+			return (-1);
+		if (i == 0 || i == mlx->map.row - 1 || j == 0 || j == mlx->map.col - 1)
+			return (printf("failed: player is at the edge of the map\n"), -1);
+		if (ft_strchr("NSEW", mlx->map.map[i - 1][j]) ||
+				ft_strchr("NSEW", mlx->map.map[i + 1][j])
+				|| ft_strchr("NSEW", mlx->map.map[i][j - 1])
+				|| ft_strchr("NSEW", mlx->map.map[i][j + 1]))
+			return (printf("failed: player is not surrounded by walls\n"), -1);
+	}
+	return (0);
 }
