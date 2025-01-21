@@ -123,17 +123,17 @@ double	normal_angl(double angle)
 
 static void	ft_move(t_mlx *mlx, double px, double py)
 {
-	double	ppx;
-	double	ppy;
+	double	Player_Position_x;
+	double	Player_Position_y;
 
-	ppx = (mlx->player.x * size) + (px * SPEED_PLY);
-	ppy = (mlx->player.y * size) + (py * SPEED_PLY);
-	if (mlx->map.map[(int)((ppy + WALL_PADDING) / size)][(int)
-			(ppx / size)] == '1' || mlx->map.map[(int)(ppy / size)]
-			[(int)((ppx + WALL_PADDING) / size)] == '1' || mlx->map.map[(int)
-			((ppy - WALL_PADDING) / size)][(int)
-			(ppx / size)] == '1' || mlx->map.map[(int)(ppy / size)]
-			[(int)((ppx - WALL_PADDING) / size)] == '1')
+	Player_Position_x = (mlx->player.x * size) + (px * SPEED_PLY);
+	Player_Position_y = (mlx->player.y * size) + (py * SPEED_PLY);
+	if (mlx->map.map[(int)((Player_Position_y + WALL_PADDING) / size)][(int)
+			(Player_Position_x / size)] == '1' || mlx->map.map[(int)(Player_Position_y / size)]
+			[(int)((Player_Position_x + WALL_PADDING) / size)] == '1' || mlx->map.map[(int)
+			((Player_Position_y - WALL_PADDING) / size)][(int)
+			(Player_Position_x / size)] == '1' || mlx->map.map[(int)(Player_Position_y / size)]
+			[(int)((Player_Position_x - WALL_PADDING) / size)] == '1')
 		return ;
 	mlx->player.x = ((mlx->player.x * size)
 			+ (px * SPEED_PLY)) / size;
@@ -141,26 +141,25 @@ static void	ft_move(t_mlx *mlx, double px, double py)
 			+ (py * SPEED_PLY)) / size;
 }
 
-void	move_player(mlx_key_data_t data, void *param)
+void	move_player(t_mlx *mlx)
 {
 	double	rangle;
-	t_mlx *mlx;
 
 	rangle = mlx->player.position;
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_W))
-		ft_move(mlx, cos(deg2rad(rangle)), -sin(deg2rad(rangle)));
+		ft_move(mlx, cos(computeDeg(rangle)), -sin(computeDeg(rangle)));
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_S))
-		ft_move(mlx, -cos(deg2rad(rangle)), sin(deg2rad(rangle)));
+		ft_move(mlx, -cos(computeDeg(rangle)), sin(computeDeg(rangle)));
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_A))
-		ft_move(mlx, sin(deg2rad(rangle)), cos(deg2rad(rangle)));
+		ft_move(mlx, sin(computeDeg(rangle)), cos(computeDeg(rangle)));
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_D))
-		ft_move(mlx, -sin(deg2rad(rangle)), -cos(deg2rad(rangle)));
+		ft_move(mlx, -sin(computeDeg(rangle)), -cos(computeDeg(rangle)));
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_ESCAPE))
 		exit(EXIT_SUCCESS);
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_RIGHT))
-		mlx->player.position = normalize_angle(mlx->player.position + SPEED_ROTATE);
+		mlx->player.position =  normal_angl(mlx->player.position + SPEED_ROTATE);
 	if (mlx_is_key_down(mlx->mlx, MLX_KEY_LEFT))
-		mlx->player.position = normalize_angle(mlx->player.position - SPEED_ROTATE);
+		mlx->player.position =  normal_angl(mlx->player.position - SPEED_ROTATE);
 }
 
 int main(int ac, char **av)
@@ -188,8 +187,6 @@ int main(int ac, char **av)
 		}
 		load_textures(&mlx);
 		__create_window(&mlx);
-		draw(&mlx);
-		mlx_key_hook(mlx.mlx, move_player, &mlx);
     	mlx_loop(mlx.mlx);
 		free_textures(&mlx);
 

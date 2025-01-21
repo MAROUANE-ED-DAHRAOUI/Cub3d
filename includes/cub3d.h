@@ -84,6 +84,8 @@ t_ray   cast_ray(t_mlx *mlx, double rangle);
 int	     PlayerCounter(t_mlx *mlx);
 char	*ft_strchr(const char *s, int c);
 int	space_surrounding(t_mlx *mlx, int i, int j);
+double  computeDeg(double angle);
+void	move_player(t_mlx *mlx);
 
 
 

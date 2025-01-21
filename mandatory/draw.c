@@ -132,20 +132,13 @@ void	draw_rays(t_mlx *mlx, int i_x)
     double          tstep;
     int             index = 0;
 
-    // Calculate the distance to the wall
-    tstep = (mlx->pxl.endy - mlx->pxl.starty) / size;
+    tstep = (mlx->pxl.endy - mlx->pxl.starty) / (double)size;
     
     // Calculate initial x_texture coordinate
 	if (mlx->rays->vertical == false) 
     	x_texture = (int)mlx->rays->ray_x % size;
 	else
     	x_texture = (int)mlx->rays->ray_y % size;
-
-if (x_texture < 0 || x_texture >= size) {
-    printf("Error: Invalid texture index x_texture = %d\n", x_texture);
-    return;
-}
-
     
     while(index < size)
     {
@@ -161,7 +154,7 @@ if (x_texture < 0 || x_texture >= size) {
 
 void      calculate_ray_and_fov(t_mlx *mlx, double *rangle, double *fov_step)
 {
-    *rangle = mlx->player.position - 0;
+    *rangle = mlx->player.position - 30;
     *fov_step = FOV / (double)WIDTH;
 }
 
@@ -185,6 +178,25 @@ t_ray initialRay()
     return (ray);
 }
 
+void	ceil_floor_drawing(t_mlx *mlx)
+{
+	int	i;
+	int	index;
+
+	i = -1;
+	while (++i < HEIGHT)
+	{
+		index = -1;
+		while (++index < WIDTH)
+		{
+			if (i < (HEIGHT / 2))
+				mlx_put_pixel(mlx->img.img, index, i, mlx->map.c_color | 0xff);
+			else
+				mlx_put_pixel(mlx->img.img, index, i, mlx->map.f_color | 0xff);
+		}
+	}
+}
+
 void draw(t_mlx *mlx) 
 {
     double rangle;
@@ -197,6 +209,7 @@ void draw(t_mlx *mlx)
     t_ray ray;
     
     ray = initialRay();
+    move_player(mlx);
     line_height = 0;
     ray_x = mlx->player.x;
     ray_y = mlx->player.y;
@@ -207,6 +220,7 @@ void draw(t_mlx *mlx)
         mlx_delete_image(mlx->mlx, mlx->img.img);
     mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
 
+    ceil_floor_drawing(mlx);
     calculate_ray_and_fov(mlx, &rangle, &fov_step);
     index = 0;
 
@@ -214,29 +228,9 @@ void draw(t_mlx *mlx)
         normal_angl(rangle);
         ray = cast_ray(mlx, rangle);
 
-        if (mlx->rays->distance == 0) {
-            printf("Error: Distance is zero at index %d\n", index);
-            return;
-        }
-
         line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
-        if (isnan(line_height) || isinf(line_height)) {
-            printf("line_height computation failed: size = %d, distance = %f, cos = %f\n",
-            size, mlx->rays->distance, cos(computeDeg(rangle - mlx->player.position)));
-            return;
-        }
-
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
         pxl.endy = (HEIGHT / 2) + (line_height / 2);
-
-        if (isnan(pxl.starty) || isinf(pxl.starty) || isnan(pxl.endy) || isinf(pxl.endy)) {
-            printf("Error: Invalid pixel coordinates \nat index %d, line_height: %f\n", index, line_height);
-            return;
-        }
-
-        printf("line_height = %f,\n pxl.starty = %f,\n pxl.endy = %f\n, index = %d\n, dprojection = %f\n",
-               line_height, pxl.starty, pxl.endy, index, mlx->dprojection);
-
         draw_rays(mlx, index);
         rangle += fov_step;
         index++;
