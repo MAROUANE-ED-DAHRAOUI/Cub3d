@@ -124,15 +124,15 @@ void draw_vertical_line(t_mlx *mlx, int i_x, double *coords, unsigned int color)
 
 void	draw_rays(t_mlx *mlx, int i_x)
 {
-    mlx->rays->ray_x = mlx->player.x;
-    mlx->rays->ray_y = mlx->player.y;
     int          x_texture = 0;
     int             color = 0;
     double	        coords[2];
     double          tstep;
     int             index = 0;
 
-    tstep = (mlx->pxl.endy - mlx->pxl.starty) / (double)size;
+    mlx->rays->ray_x = mlx->player.x;
+    mlx->rays->ray_y = mlx->player.y;
+    tstep = (mlx->pxl.endy - mlx->pxl.starty) / size;
     
     // Calculate initial x_texture coordinate
 	if (mlx->rays->vertical == false) 
@@ -144,7 +144,6 @@ void	draw_rays(t_mlx *mlx, int i_x)
     {
         coords[0] = mlx->pxl.starty;
         coords[1] = mlx->pxl.starty + tstep;
-        printf("coords[0] = %f, coords[1] = %f\n, x_texture=%d\n", coords[0], coords[1], x_texture);
         color = mlx->texture_pixels[size * index + x_texture];
         draw_vertical_line(mlx, i_x, coords, color);
         mlx->pxl.starty += tstep;
@@ -197,8 +196,26 @@ void	ceil_floor_drawing(t_mlx *mlx)
 	}
 }
 
-void draw(t_mlx *mlx) 
+void	AdjustFovAngle(double *angle)
 {
+	double	for_angles[4];
+	int		i;
+
+	for_angles[0] = 360.0f;
+	for_angles[1] = 90.0f;
+	for_angles[2] = 180.0f;
+	for_angles[3] = 270.0f;
+	i = -1;
+	while (++i < 4)
+		if (fabs(for_angles[i] - *angle) < FLT_EPSILON)
+			*angle += 0.1f;
+	while (*angle > 360.0f)
+		*angle -= 360.0f;
+}
+
+void draw(void *frr) 
+{
+    t_mlx *mlx;
     double rangle;
     double fov_step;
     double line_height;
@@ -208,6 +225,7 @@ void draw(t_mlx *mlx)
     float ray_y;
     t_ray ray;
     
+    mlx = (t_mlx *)frr;
     ray = initialRay();
     move_player(mlx);
     line_height = 0;
@@ -223,12 +241,11 @@ void draw(t_mlx *mlx)
     ceil_floor_drawing(mlx);
     calculate_ray_and_fov(mlx, &rangle, &fov_step);
     index = 0;
-
-    while (index < WIDTH) {
-        normal_angl(rangle);
+    while (index < WIDTH) 
+    {
+        AdjustFovAngle(&rangle);
         ray = cast_ray(mlx, rangle);
-
-        line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position)) * mlx->dprojection);
+        line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position))) * mlx->dprojection;
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
         pxl.endy = (HEIGHT / 2) + (line_height / 2);
         draw_rays(mlx, index);

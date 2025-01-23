@@ -17,7 +17,6 @@ void	__create_window(t_mlx *mlx)
 	mlx->mlx = mlx_init(WIDTH, HEIGHT, "New Window", true);
 	mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
 	mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);
-	mlx_loop_hook(mlx->mlx, (void (*)(void *))draw, mlx);
 }
 
 

@@ -22,6 +22,7 @@
 # include <stdbool.h>
 # include <fcntl.h>
 # include <math.h>
+#include <float.h>
 
 #define  FOV 60
 # define PI 3.1415926535897
@@ -70,7 +71,8 @@ void		check_valid_map(char *map, t_mlx *mlx);
 void        draw_map(t_mlx *mlx);
 void        draw_mini_map(t_mlx *mlx);
 void		draw_player(t_mlx *mlx, int x0, int y0, int color);
-void        draw(t_mlx *mlx);
+void        draw(void *frr);
+
 bool        wall(t_mlx *mlx, float px, float py);
 //------------------------init_functions-----------------------------------//
 void        __create_window(t_mlx *mlx);
@@ -83,10 +85,25 @@ void    free_textures(t_mlx *mlx);
 t_ray   cast_ray(t_mlx *mlx, double rangle);
 int	     PlayerCounter(t_mlx *mlx);
 char	*ft_strchr(const char *s, int c);
-int	space_surrounding(t_mlx *mlx, int i, int j);
+int	    space_surrounding(t_mlx *mlx, int i, int j);
 double  computeDeg(double angle);
 void	move_player(t_mlx *mlx);
-
+char	*ExtractPathNorthTex(char *line);
+char	*ExtractPathSouthTex(char *line);
+char	*ExtractPathWestTex(char *line);
+char	*ExtractPathEastTex(char *line);
+void	ParseLineExtractAssets(char *line, t_mlx *mlx);
+char	*ft_strdup(const char *s1);
+void	*ft_calloc(size_t count, size_t _size);
+char	*ft_substr(const char *s, unsigned int start, size_t len);
+int	    ft_atoi(const char *str);
+void	ft_free(char **str);
+int	    F_color(char *line);
+int	    C_color(char *line);
+unsigned int	_rgba(int r, int g, int b, int a);
+char	*ft_strtrim(char const *s1, char const *set);
+int     check_map(t_mlx *mlx);
+void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx);
 
 
 #endif

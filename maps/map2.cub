@@ -1,5 +1,10 @@
-F 76,76,76
-C 99,99,99
+NO /home/marouane/Desktop/marouanCub3d/texture/north.png
+SO /home/marouane/Desktop/marouanCub3d/texture/south.png
+WE /home/marouane/Desktop/marouanCub3d/texture/west.png
+EA /home/marouane/Desktop/marouanCub3d/texture/east.png
+
+C 35,19,73
+F 15,6,40
 
 1111111111111111111
 10E1001001001000001

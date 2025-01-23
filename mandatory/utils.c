@@ -12,6 +12,96 @@
 
 #include "../includes/cub3d.h"
 
+char	*ft_strtrim(char const *s1, char const *set)
+{
+	char	*str;
+	int		i;
+	int		j;
+	int		k;
+
+	if (!s1 || !set)
+		return (NULL);
+	i = 0;
+	j = my_strlen((char *)s1) - 1;
+	k = 0;
+	while (s1[i] && ft_strchr(set, s1[i]))
+		i++;
+	while (j >= 0 && ft_strchr(set, s1[j]))
+		j--;
+	if (j < i)
+		return (ft_strdup(""));
+	str = (char *)malloc(sizeof(char) * (j - i + 2));
+	if (!str)
+		return (NULL);
+	while (i <= j)
+		str[k++] = s1[i++];
+	str[k] = '\0';
+	return (str);
+}
+
+void	ft_free(char **str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		free(str[i]);
+		i++;
+	}
+	free(str);
+}
+
+int	ft_isdigit(int c)
+{
+	return (c >= '0' && c <= '9');
+}
+
+int	ft_atoi(const char *str)
+{
+	int		i;
+	int		sign;
+	long	nbr;
+
+	i = 0;
+	sign = 1;
+	nbr = 0;
+	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n' || str[i] == '\r'
+		|| str[i] == '\v' || str[i] == '\f')
+		i++;
+	if (str[i] == '-')
+		sign = -1;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while (ft_isdigit(str[i]))
+	{
+		nbr = nbr * 10 + (str[i] - '0');
+		i++;
+	}
+	return (nbr * sign);
+}
+
+char	*ft_substr(const char *s, unsigned int start, size_t len)
+{
+	int		i;
+	char	*str;
+
+	if (!s)
+		return (NULL);
+	else if ((size_t) my_strlen((char *)s + start) < len)
+		str = malloc(sizeof(char) * (my_strlen((char *)s + start + 1)));
+	else
+		str = malloc(sizeof(char) * ((int)len + 1));
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (s[start] && i < (int)len && (unsigned int)
+		my_strlen((char *)s) >= start)
+		str[i++] = s[start++];
+	str[i] = '\0';
+	return (str);
+}
+
 size_t  my_strlen(const char *str)
 {
 	size_t	len;
@@ -22,18 +112,42 @@ size_t  my_strlen(const char *str)
 	return (len);
 }
 
+char	*ft_strdup(const char *s1)
+{
+	int		indx;
+	int		len;
+	char	*str;
+
+	indx = 0;
+	len = my_strlen((char *)s1);
+	str = ((char *)malloc(sizeof(char) * (len +1)));
+	if (str == NULL)
+		return (NULL);
+	while (indx < len)
+	{
+		str[indx] = s1[indx];
+		indx++;
+	}
+	str[indx] = '\0';
+	return (str);
+}
+
 int	n_cmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;
+	unsigned char	*s1c;
+	unsigned char	*s2c;
 
+	s1c = (unsigned char *)s1;
+	s2c = (unsigned char *)s2;
 	i = 0;
-	while (i < n && (s1[i] != '\0' || s2[i] != '\0' ))
-	{
-		if (s1[i] != s2[i])
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	if (n == 0)
+		return (0);
+	if (s1c == NULL || s2c == NULL)
+		return (0);
+	while (s1c[i] == s2c[i] && s1c[i] && s2c[i] && i < n - 1)
 		i++;
-	}
-	return (0);
+	return (s1c[i] - s2c[i]);
 }
 
 int	cmp(const char *s1, const char *s2)

@@ -13,6 +13,8 @@
 #ifndef STRUCT_H
 # define STRUCT_H
 
+#include "../cub3d.h"
+
 typedef struct s_cord
 {
 	int	x; // x coordinate
@@ -59,9 +61,11 @@ typedef struct s_map
 {
 	int				col;
 	int				row;
+	int				skip;
 	int				value;
+	char			*path[4];
 	char			**map;
-	mlx_texture_t	**texture;
+	mlx_texture_t	*textures[4];;
 	char			**textures;
 	char			**colors;
 	int				f_color;

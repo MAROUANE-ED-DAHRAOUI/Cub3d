@@ -46,9 +46,9 @@ bool	check_inters(t_mlx *mlx, t_ray *ray)
 	return (false);
 }
 
-static void	ft_finder(double x_step, double y_step, t_ray *player, t_mlx *game)
+void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx)
 {
-	while (check_inters(game, player) == false)
+	while (check_inters(mlx, player) == false)
 	{
 		player->ray_x += x_step;
 		player->ray_y += y_step;
@@ -195,22 +195,17 @@ t_ray cast_ray(t_mlx *mlx, double rangle)
     t_ray step_ver;
 
 
-    ray_h.ray_x = mlx->player.x;
-    ray_h.ray_y = mlx->player.y;
-	printf("ray_h.ray_x = %f,       ray_h.ray_y = %f\n", ray_h.ray_x, ray_h.ray_y);
+    ray_h.ray_x = mlx->player.x * size;
+    ray_h.ray_y = mlx->player.y * size;
     ft_Copymem(&ray_p, &ray_h, sizeof(t_ray));
     ray_p = ver_intercept(mlx, rangle, ray_p);
     ray_h = hor_intercept(mlx, rangle, ray_h);
     step_ver = ver_intercept(mlx, rangle, ray_p);
     step_hor = hor_intercept(mlx, rangle, ray_h);
 
-	printf("Vertical ray: x = %f, y = %f\n", ray_p.ray_x, ray_p.ray_y);
-	printf("Horizontal ray: x = %f, y = %f\n", ray_h.ray_x, ray_h.ray_y);
-
-
-    ft_finder(step_ver.ray_x - ray_p.ray_x, step_ver.ray_y - ray_p.ray_y,
+    find_intersection(step_ver.ray_x - ray_p.ray_x, step_ver.ray_y - ray_p.ray_y,
 		&step_ver, mlx);
-	ft_finder(step_hor.ray_x - ray_h.ray_x, step_hor.ray_y - ray_h.ray_y,
+	find_intersection(step_hor.ray_x - ray_h.ray_x, step_hor.ray_y - ray_h.ray_y,
 		&step_hor, mlx);
 	step_ver.distance = sqrt(pow(step_ver.ray_x - mlx->player.x * size, 2)
 			+ pow(step_ver.ray_y - mlx->player.y * size, 2));

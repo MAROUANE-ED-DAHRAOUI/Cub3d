@@ -12,7 +12,7 @@
 
 #include "../includes/cub3d.h"
 
-static int	ft_strlen(char *str)
+static int	my_strlen(char *str)
 {
 	int	i;
 
@@ -79,7 +79,7 @@ char	*ft_strchr(const char *s, int c)
 	i = 0;
 	str = (char *)s;
 	if ((char)c == '\0')
-		return (str + ft_strlen(str));
+		return (str + my_strlen(str));
 	while (str[i])
 	{
 		if (str[i] == (char)c)
@@ -103,7 +103,7 @@ int	check_map_closed(t_mlx *mlx)
 			if (mlx->map.map[i][idx] == '0')
 			{
 				if (i == 0 || i == mlx->map.row - 1 || idx == 0
-					|| idx == (int)ft_strlen(mlx->map.map[i]) - 1)
+					|| idx == (int)my_strlen(mlx->map.map[i]) - 1)
 					return (printf("failed: map is not closed\n"), -1);
 				if (mlx->map.map[i - 1][idx] == ' ' || mlx->map.map[i + 1][idx] == ' '
 						|| mlx->map.map[i][idx - 1] == ' '
@@ -171,6 +171,29 @@ int check_map(t_mlx *mlx)
 	return (check_first_last_line(mlx));
 }
 
+int		ExtractAssetsRows(int fd, char **map)
+{
+	int		i;
+	int		line;
+	char	*tmp[2];
+
+	i = 0;
+	line = 0;
+	tmp[0] = get_next_line(fd);
+	while (tmp[0])
+	{
+		tmp[1] = ft_strtrim(tmp[0], " \n\t\v\f\r");
+		if (my_strlen(tmp[1]))
+			map[i++] = ft_strtrim(tmp[0], " \n");
+		if (line < my_strlen(map[i - 1]))
+			 line = my_strlen(map[i - 1]);
+		free(tmp[0]);
+		free(tmp[1]);
+		tmp[0] = get_next_line(fd);
+	}
+	return (line);
+}
+
 void	read_and_fill_map(char *str, t_mlx *mlx)
 {
 	int		fd;
@@ -182,27 +205,54 @@ void	read_and_fill_map(char *str, t_mlx *mlx)
 	t = 0;
 	c = 0;
 	mlx->map.map = NULL;
-	mlx->map.map = ft_calloc(mlx->map.col + 3, sizeof(char *));	
 	fd = open(str, O_RDONLY);
-	if(!fd)
-		printf("can't open the map file");
-	line = get_next_line(fd);
+	if(fd != -1)
+		printf("can't open the map file\n");
 	i = -1;
-	while (line)
+	while (++i < mlx->map.skip)
+		free(get_next_line(fd));
+	mlx->map.map = ft_calloc(mlx->map.col + 7, sizeof(char *));	
+	mlx->map.row = ExtractAssetsRows(fd, mlx->map.map);
+	close(fd);
+}
+
+void	ParseLineExtractAssets(char *line, t_mlx *mlx)
+{
+	if (n_cmp(line, "NO", 2) == 0)
+		mlx->map.path[0] = ExtractPathNorthTex(line);
+	if (n_cmp(line, "SO", 2) == 0)
+		mlx->map.path[1] = ExtractPathSouthTex(line);
+	if (n_cmp(line, "WE", 2) == 0)
+		mlx->map.path[2] = ExtractPathWestTex(line);
+	if (n_cmp(line, "EA", 2) == 0)
+		mlx->map.path[3] = ExtractPathEastTex(line);
+	if (n_cmp(line, "F", 1) == 0)
+		mlx->map.f_color = F_color(line);
+	if (n_cmp(line, "C", 1) == 0)
+		mlx->map.c_color = C_color(line);
+}
+
+int 	ExtractsAssetsFromFile(char *map, t_mlx *mlx)
+{
+	char	*line;
+	int		fd;
+	int		i;
+
+	fd = open(map, O_RDONLY);
+	line = get_next_line(fd);
+	i = 0;
+	if(fd != -1 || *line != '\0')
+		printf("cant open FILE\n");
+	while (line && ft_strchr("\t 10", line[0]) == NULL)
 	{
-		if (!cmp(get_part(line, 0), "F") || !cmp(get_part(line, 1), "C"))
-			__colors(mlx, line, &c);
-		else if (line[0] == '1' && ++i < mlx->map.col)
-			__map(mlx, line, &i);
+		line[my_strlen(line) - 1] = '\0';
+		ParseLineExtractAssets(line, mlx);
 		free(line);
 		line = get_next_line(fd);
+		i++;
 	}
-	if(check_map(mlx) == 0)
-	{
-		printf("something is wrong in the map\n");
-		exit(EXIT_FAILURE);
-	}
-	close(fd);
+	free(line);
+	return (i);
 }
 
 void	check_valid_map(char *map, t_mlx *mlx)
@@ -211,29 +261,30 @@ void	check_valid_map(char *map, t_mlx *mlx)
 	char	*line;
 	int		i;
 	int		l;
+	int		col;
+	char	*tmp;
+	char	*tmp1;
 
 	mlx->map.col = 0;
 	l = 0;
+
+	mlx->map.skip = ExtractsAssetsFromFile(map, mlx);
 	fd = open(map, O_RDONLY);
-	line = get_next_line(fd);
-	while (line)
+	tmp = get_next_line(fd);
+	while (1)
 	{
-		if (line[0] == '1') 
-		{
-			i = 0;
-			mlx->map.row = 0;
-			while (line[i] && line[i] != '\n')
-			{
-				mlx->map.row++;
-				i++;
-			}
-			mlx->map.col++;
-		}
-		l++;
-		free(line);
-		line = get_next_line(fd);
+		tmp1 = ft_strtrim(tmp, " \n\t\v\f\r");
+		if (my_strlen(tmp1))
+			col++;
+		free(tmp);
+		free(tmp1);
+		tmp = get_next_line(fd);
+		if (!tmp)
+			break ;
 	}
-	if (mlx->map.row < 3)
+	close(fd);
+	mlx->map.col = col;
+	if (mlx->map.col < 3)
 	{
 		printf("failed: Map is too small\n");
 		exit(EXIT_FAILURE);

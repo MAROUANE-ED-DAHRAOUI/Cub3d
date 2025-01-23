@@ -1,5 +1,10 @@
-F 164,169,20
-C 153,204,255
+NO /home/marouane/Desktop/marouanCub3d/texture/north.png
+SO /home/marouane/Desktop/marouanCub3d/texture/south.png
+WE /home/marouane/Desktop/marouanCub3d/texture/west.png
+EA /home/marouane/Desktop/marouanCub3d/texture/east.png
+
+C 35,19,73
+F 15,6,40
 
 1111111111111111111111111
 1000000000000000000000001

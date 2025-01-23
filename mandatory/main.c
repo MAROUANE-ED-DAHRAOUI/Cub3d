@@ -47,29 +47,18 @@ void free_textures(t_mlx *mlx)
     }
 }
 
-unsigned int	create_rgba(int r, int g, int b, int a)
-{
-	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-	{
-		printf("[failed: invalid color]\n");
-		exit(EXIT_FAILURE);
-	}
-	return (r << 24 | g << 16 | b << 8 | a);
-}
-
-
 unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 {
 	unsigned int				x;
 	unsigned int				y;
-	unsigned int	*pixels;
+	unsigned int				*pixels;
 
 	x = 0;
 	y = 0;
 	pixels = ft_calloc(texture->width * texture->height, sizeof(unsigned int));
 	while (x < (texture->width * texture->height))
 	{
-		pixels[x] = create_rgba(texture->pixels[y], texture->pixels[y + 1],
+		pixels[x] = _rgba(texture->pixels[y], texture->pixels[y + 1],
 				texture->pixels[y + 2], texture->pixels[y + 3]);
 		y += 4;
 		x++;
@@ -80,44 +69,37 @@ unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 void load_textures(t_mlx *mlx)
 {
     // Allocate memory for textures
-    mlx->textures = malloc(sizeof(t_texture));
-    if (!mlx->textures)
-    {
-        fprintf(stderr, "Failed to allocate memory for textures\n");
-        exit(EXIT_FAILURE);
-    }
+    // mlx->textures = malloc(sizeof(t_texture));
+    // if (!mlx->textures)
+    // {
+    //     fprintf(stderr, "Failed to allocate memory for textures\n");
+    //     exit(EXIT_FAILURE);
+    // }
 
-    // Load texture files
-    mlx->textures->no = mlx_load_png("/Users/med-dahr/Cub3d/texture/north.png");
-    mlx->textures->so = mlx_load_png("/Users/med-dahr/Cub3d/texture/south.png");
-    mlx->textures->we = mlx_load_png("/Users/med-dahr/Cub3d/texture/west.png");
-    mlx->textures->ea = mlx_load_png("/Users/med-dahr/Cub3d/texture/east.png");
-
-    // Check if all textures loaded successfully
-    if (!mlx->textures->no || !mlx->textures->so || !mlx->textures->we || !mlx->textures->ea)
-    {
-        fprintf(stderr, "Failed to load textures\n");
-        free_textures(mlx); // Free any successfully loaded textures
-        exit(EXIT_FAILURE);
-    }
-	mlx->texture_pixels = ft_calloc(4, sizeof(unsigned int *));
-	if(mlx->texture_pixels == NULL)
+	mlx->map.textures[0] = mlx_load_png(mlx->map.path[0]);
+	mlx->map.textures[1] = mlx_load_png(mlx->map.path[1]);
+	mlx->map.textures[2] = mlx_load_png(mlx->map.path[2]);
+	mlx->map.textures[3] = mlx_load_png(mlx->map.path[3]);
+	free(mlx->map.path[0]);
+	free(mlx->map.path[1]);
+	free(mlx->map.path[2]);
+	free(mlx->map.path[3]);
+	if (mlx->map.textures[0] == NULL || mlx->map.textures[1] == NULL
+		|| mlx->map.textures[2] == NULL || mlx->map.textures[3] == NULL)
 	{
-		fprintf(stderr, "Failed to allocate memory for texture pixels\n");
-		free_textures(mlx);
+		printf("failed: the textures are not loaded\n");
 		exit(EXIT_FAILURE);
 	}
-	mlx->texture_pixels[0] = *convert_tex_to_px(mlx->textures->no);
-	mlx->texture_pixels[1] = *convert_tex_to_px(mlx->textures->ea);
-	mlx->texture_pixels[2] = *convert_tex_to_px(mlx->textures->we);
-	mlx->texture_pixels[3] = *convert_tex_to_px(mlx->textures->so);
+	mlx->texture_pixels = ft_calloc(4, sizeof(unsigned int *));
+	mlx->texture_pixels = convert_tex_to_px(mlx->map.textures[0]);
 }
 
 double	normal_angl(double angle)
 {
-	angle = fmod(angle, PI * 2);
 	if (angle < 0)
-		angle += PI * 2;;
+		angle += 360;
+	if (angle >= 360)
+		angle -= 360;
 	return (angle);
 }
 
@@ -179,7 +161,8 @@ int main(int ac, char **av)
 			printf("Cant allocate map struct, increase the program break");
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
-		// print(&mlx);
+		if(check_map(&mlx) == 0)
+			printf("something wrong in map\n");
 		if(PlayerCounter(&mlx) == 0)
 		{
 			fprintf(stderr, "There is a wrong in map\n");
@@ -187,9 +170,9 @@ int main(int ac, char **av)
 		}
 		load_textures(&mlx);
 		__create_window(&mlx);
+		mlx_loop_hook(mlx.mlx , draw, &mlx);
     	mlx_loop(mlx.mlx);
 		free_textures(&mlx);
-
 	}
 	else
 		__error(0, 0);
