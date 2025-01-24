@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 13:40:52 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 13:42:05 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,8 @@ int	PlayerCounter(t_mlx *mlx)
 	player = 0;
 	while (++i < mlx->map.col)
 	{
-		idx = 0;
-		while (mlx->map.map[i][idx++])
+		idx = -1;
+		while (mlx->map.map[i][++idx])
 		{
 			if (space_surrounding(mlx, i, idx) == -1)
 				return (-1);
