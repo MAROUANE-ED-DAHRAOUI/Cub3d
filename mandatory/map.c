@@ -6,21 +6,27 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:51:12 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/20 11:15:17 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 13:35:31 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
 
-static int	my_strlen(char *str)
-{
-	int	i;
+char	*ExtractPathNorthTex(char *line);
+char	*ExtractPathSouthTex(char *line);
+char	*ExtractPathEastTex(char *line);
+char	*ExtractPathWestTex(char *line)
+;
 
-	i = 0;
-	while (str && str[i])
-		i++;
-	return (i);
-}
+// int	my_strlen(char *str)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (str && str[i])
+// 		i++;
+// 	return (i);
+// }
 
 char	*get_part(char *line, int part)
 {
@@ -33,44 +39,6 @@ char	*get_part(char *line, int part)
 		return (split[1]);
 }
 
-void	*ft_calloc(size_t count, size_t Size)
-{
-	char	*res;
-	size_t	i;
-
-	i = 0;
-	res = (char *)malloc(count * size);
-	if (!res)
-		return (NULL);
-	while (i < count * size)
-	{
-		res[i] = 0;
-		i++;
-	}
-	return (res);
-}
-
-static void	__allocate_for_me(t_mlx *mlx)
-{
-	mlx->map.map = ft_calloc(mlx->map.col, sizeof(char *));
-	mlx->map.textures = (char **)malloc(4 * sizeof(char *));
-	mlx->map.colors = (char **)malloc(2 * sizeof(char *));
-}
-
-static void	__colors(t_mlx *mlx, char *line, int *c)
-{
-	mlx->map.colors[*c] = get_part(line, 0);
-	if (!cmp(get_part(line, 1), "F"))
-		mlx->map.f_color = get_colors(mlx->map.colors[*c++]);
-	else if (!cmp(get_part(line, 1), "C"))
-		mlx->map.c_color = get_colors(mlx->map.colors[*c++]);
-}
-
-static void	__map(t_mlx *mlx, char *line, int *i)
-{
-	mlx->map.map[(*i)] = parse_strdup(line);
-}
-
 char	*ft_strchr(const char *s, int c)
 {
 	char	*str;
@@ -80,10 +48,10 @@ char	*ft_strchr(const char *s, int c)
 	str = (char *)s;
 	if ((char)c == '\0')
 		return (str + my_strlen(str));
-	while (str[i])
+	while (str[i] != '\0')
 	{
 		if (str[i] == (char)c)
-			return (str + i);
+			return (char *)(str + i);
 		i++;
 	}
 	return (NULL);
@@ -97,17 +65,16 @@ int	check_map_closed(t_mlx *mlx)
 	i = 0;
 	while (i < mlx->map.col)
 	{
+		printf("map[%d] = %s\n", i, mlx->map.map[i]);
 		idx = 0;
 		while (mlx->map.map[i][idx])
 		{
 			if (mlx->map.map[i][idx] == '0')
 			{
-				if (i == 0 || i == mlx->map.row - 1 || idx == 0
+				if (i == 0 || i == mlx->map.col - 1 || idx == 0
 					|| idx == (int)my_strlen(mlx->map.map[i]) - 1)
 					return (printf("failed: map is not closed\n"), -1);
-				if (mlx->map.map[i - 1][idx] == ' ' || mlx->map.map[i + 1][idx] == ' '
-						|| mlx->map.map[i][idx - 1] == ' '
-						|| mlx->map.map[i][idx + 1] == ' ')
+				if(mlx->map.map[i][idx - 1] == ' ' || mlx->map.map[i][idx + 1] == ' ')
 					return (printf("failed: map is not closed\n"), -1);
 			}
 			idx++;
@@ -149,16 +116,16 @@ static int	check_first_last_line(t_mlx *mlx)
 	return (0);
 }
 
-int check_map(t_mlx *mlx)
+int 	check_map(t_mlx *mlx)
 {
 	int	i;
 	int	j;
 
 	i = 0;
-	while (i < mlx->map.row)
+	while (i < mlx->map.col)
 	{
 		j = 0;
-		while (mlx->map.map[i][j])
+		while (mlx->map.map[i][j] != '\0')
 		{
 			if (!ft_strchr(" 01NSEW", mlx->map.map[i][j]))
 				return (printf("failed: map contains invalid character\n"), -1);
@@ -166,9 +133,12 @@ int check_map(t_mlx *mlx)
 		}
 		i++;
 	}
+	printf("map is valid\n");
 	if (check_map_closed(mlx) == -1)
 		return (printf("there is aproblem in map\n"), -1);
-	return (check_first_last_line(mlx));
+	if(check_first_last_line(mlx) == -1)
+		return (printf("there is aproblem in map\n"), -1);
+	return (0);
 }
 
 int		ExtractAssetsRows(int fd, char **map)
@@ -176,43 +146,58 @@ int		ExtractAssetsRows(int fd, char **map)
 	int		i;
 	int		line;
 	char	*tmp[2];
-
 	i = 0;
 	line = 0;
 	tmp[0] = get_next_line(fd);
-	while (tmp[0])
+	if(!tmp[0])
+	{
+		printf("failed: map is empty\n");
+		exit(EXIT_FAILURE);
+	}
+	while (tmp[0] != NULL)	
 	{
 		tmp[1] = ft_strtrim(tmp[0], " \n\t\v\f\r");
 		if (my_strlen(tmp[1]))
+		{
 			map[i++] = ft_strtrim(tmp[0], " \n");
+			printf("map[%d] = %s\n", i - 1, map[i - 1]);
+			if(!(map[i] == '\0'))
+			{
+				printf("failed: map is empty\n");
+				exit(EXIT_FAILURE);
+			}
+		}
 		if (line < my_strlen(map[i - 1]))
 			 line = my_strlen(map[i - 1]);
 		free(tmp[0]);
 		free(tmp[1]);
 		tmp[0] = get_next_line(fd);
 	}
+	// printf("line %d, i = %d\n", line, i);
 	return (line);
 }
 
 void	read_and_fill_map(char *str, t_mlx *mlx)
 {
 	int		fd;
-	char	*line;
 	int		i;
-	int		t;
-	int		c;
+	char    **map;
 
-	t = 0;
-	c = 0;
-	mlx->map.map = NULL;
-	fd = open(str, O_RDONLY);
-	if(fd != -1)
-		printf("can't open the map file\n");
 	i = -1;
+	map = NULL;
+	mlx->map.row = 0;
+	fd = open(str, O_RDONLY);
+	if(fd == -1)
+	{
+		printf("can't open the map file\n");
+		exit(EXIT_FAILURE);
+	}
 	while (++i < mlx->map.skip)
 		free(get_next_line(fd));
-	mlx->map.map = ft_calloc(mlx->map.col + 7, sizeof(char *));	
-	mlx->map.row = ExtractAssetsRows(fd, mlx->map.map);
+	map = ft_calloc(mlx->map.col + 7, sizeof(char *));	
+	mlx->map.row = (int)ExtractAssetsRows(fd, map);
+	printf("row %d, col%d\n", mlx->map.row, mlx->map.col);
+	mlx->map.map = map;
 	close(fd);
 }
 
@@ -227,9 +212,9 @@ void	ParseLineExtractAssets(char *line, t_mlx *mlx)
 	if (n_cmp(line, "EA", 2) == 0)
 		mlx->map.path[3] = ExtractPathEastTex(line);
 	if (n_cmp(line, "F", 1) == 0)
-		mlx->map.f_color = F_color(line);
+		mlx->map.f_color = (unsigned int)F_color(line);
 	if (n_cmp(line, "C", 1) == 0)
-		mlx->map.c_color = C_color(line);
+		mlx->map.c_color = (unsigned int)C_color(line);
 }
 
 int 	ExtractsAssetsFromFile(char *map, t_mlx *mlx)
@@ -241,8 +226,11 @@ int 	ExtractsAssetsFromFile(char *map, t_mlx *mlx)
 	fd = open(map, O_RDONLY);
 	line = get_next_line(fd);
 	i = 0;
-	if(fd != -1 || *line != '\0')
+	if(fd == -1 || !line)
+	{
 		printf("cant open FILE\n");
+		exit(EXIT_FAILURE);
+	}
 	while (line && ft_strchr("\t 10", line[0]) == NULL)
 	{
 		line[my_strlen(line) - 1] = '\0';
@@ -258,33 +246,36 @@ int 	ExtractsAssetsFromFile(char *map, t_mlx *mlx)
 void	check_valid_map(char *map, t_mlx *mlx)
 {
 	int		fd;
-	char	*line;
-	int		i;
-	int		l;
 	int		col;
 	char	*tmp;
 	char	*tmp1;
 
 	mlx->map.col = 0;
-	l = 0;
+	col = 0;
 
 	mlx->map.skip = ExtractsAssetsFromFile(map, mlx);
+	printf("skip %d\n", mlx->map.skip);
 	fd = open(map, O_RDONLY);
+	if(fd == -1)
+	{
+		printf("cant open FILE\n");
+		exit(EXIT_FAILURE);
+	}
 	tmp = get_next_line(fd);
 	while (1)
 	{
 		tmp1 = ft_strtrim(tmp, " \n\t\v\f\r");
 		if (my_strlen(tmp1))
-			col++;
+			 col++;
 		free(tmp);
 		free(tmp1);
 		tmp = get_next_line(fd);
 		if (!tmp)
 			break ;
 	}
+	mlx->map.col = col - 6;
 	close(fd);
-	mlx->map.col = col;
-	if (mlx->map.col < 3)
+	if ((mlx->map.col < 3) || mlx->map.row < 3)
 	{
 		printf("failed: Map is too small\n");
 		exit(EXIT_FAILURE);

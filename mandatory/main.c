@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 14:37:29 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 12:27:29 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void load_textures(t_mlx *mlx)
     //     exit(EXIT_FAILURE);
     // }
 
+	// mlx->map.textures = (char **)malloc(4 * sizeof(char *));
 	mlx->map.textures[0] = mlx_load_png(mlx->map.path[0]);
 	mlx->map.textures[1] = mlx_load_png(mlx->map.path[1]);
 	mlx->map.textures[2] = mlx_load_png(mlx->map.path[2]);
@@ -161,8 +162,11 @@ int main(int ac, char **av)
 			printf("Cant allocate map struct, increase the program break");
 		check_valid_map(av[1], &mlx);
 		read_and_fill_map(av[1], &mlx);
-		if(check_map(&mlx) == 0)
+		if(check_map(&mlx) == -1)
+		{
 			printf("something wrong in map\n");
+			exit(EXIT_FAILURE);
+		}
 		if(PlayerCounter(&mlx) == 0)
 		{
 			fprintf(stderr, "There is a wrong in map\n");

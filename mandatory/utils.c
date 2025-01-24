@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bbadda <bbadda@student.42.fr>              +#+  +:+       +#+        */
+/*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:54:38 by bbadda            #+#    #+#             */
-/*   Updated: 2024/11/24 17:51:49 by bbadda           ###   ########.fr       */
+/*   Updated: 2025/01/24 11:53:08 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,32 @@
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	char	*str;
-	int		i;
-	int		j;
-	int		k;
+    char	*str;
+    int		i;
+    int		j;
+    int		k;
 
-	if (!s1 || !set)
-		return (NULL);
-	i = 0;
-	j = my_strlen((char *)s1) - 1;
-	k = 0;
-	while (s1[i] && ft_strchr(set, s1[i]))
-		i++;
-	while (j >= 0 && ft_strchr(set, s1[j]))
-		j--;
-	if (j < i)
-		return (ft_strdup(""));
-	str = (char *)malloc(sizeof(char) * (j - i + 2));
-	if (!str)
-		return (NULL);
-	while (i <= j)
-		str[k++] = s1[i++];
-	str[k] = '\0';
-	return (str);
+    if (!s1 || !set)
+        return (NULL);
+    i = 0;
+    j = my_strlen((char *)s1) - 1;
+    k = 0;
+    while (s1[i] && ft_strchr(set, s1[i]))
+        i++;
+    while (j >= 0 && ft_strchr(set, s1[j]))
+        j--;
+    if (j < i)
+        return (ft_strdup(""));
+    str = malloc(sizeof(char) * (j - i + 2));
+    if (!str)
+	{
+		printf("failed: malloc\n");
+        return (NULL);
+	}
+    while (i <= j)
+        str[k++] = s1[i++];
+    str[k] = '\0';
+    return (str);
 }
 
 void	ft_free(char **str)
@@ -102,9 +105,9 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 	return (str);
 }
 
-size_t  my_strlen(const char *str)
+int  my_strlen(char *str)
 {
-	size_t	len;
+	int	len;
 
 	len = 0;
 	while (str && str[len])
@@ -164,9 +167,9 @@ int	cmp(const char *s1, const char *s2)
 	return (0);
 }
 
-void	check_file_type(const char *s)
+void	check_file_type(char *s)
 {
-	size_t	len;
+	int	len;
 
 	len = my_strlen(s);
 	if (len < 5 || n_cmp(s + (len - 4), ".cub", len - 4) != 0)

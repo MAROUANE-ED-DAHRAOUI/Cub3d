@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 16:30:56 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/18 12:53:20 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 13:07:58 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ void	__create_window(t_mlx *mlx)
  */
 int	player_position(t_mlx *mlx, int i, int j)
 {
+	printf("player position %d %d\n", i, j);
 	if (ft_strchr("NSEW", mlx->map.map[i][j]))
 	{
 		if (space_surrounding(mlx, i, j) == -1)
 			return (-1);
-		if (i == 0 || i == mlx->map.row - 1 || j == 0 || j == mlx->map.col - 1)
+		if (i == 0 || i == mlx->map.col - 1 || j == 0 || j == mlx->map.row - 1)
 			return (printf("failed: player is at the edge of the map\n"), -1);
-		if (ft_strchr("NSEW", mlx->map.map[i - 1][j]) ||
-				ft_strchr("NSEW", mlx->map.map[i + 1][j])
+		if (ft_strchr("NSEW", mlx->map.map[i - 1][j]) || ft_strchr("NSEW", mlx->map.map[i + 1][j])
 				|| ft_strchr("NSEW", mlx->map.map[i][j - 1])
 				|| ft_strchr("NSEW", mlx->map.map[i][j + 1]))
 			return (printf("failed: player is not surrounded by walls\n"), -1);

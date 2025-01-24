@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:45:25 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 11:33:55 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 12:49:11 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #define  WALL_PADDING 10 
 # define size 40
 # define BUFFER_SIZE 42
-# define WIDTH 1400
+# define WIDTH 1200
 # define HEIGHT 1000
 # define MLX_KEY_ESC 256
 # define MLX_KEY_W 87
@@ -43,10 +43,9 @@
 #define SPEED_PLY 0.1
 
 int			get_colors(char *str);
-size_t		my_strlen(const char *str);
 int			cmp(const char *s1, const char *s2);
 int			n_cmp(const char *s1, const char *s2, size_t n);
-void		check_file_type(const char *s);
+void		check_file_type(char *s);
 void		__error(int index, int fd);
 void		__error2(int index);
 //-------------------------get_next_line------------------------------------//
@@ -98,12 +97,16 @@ void	*ft_calloc(size_t count, size_t _size);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
 int	    ft_atoi(const char *str);
 void	ft_free(char **str);
-int	    F_color(char *line);
-int	    C_color(char *line);
+unsigned int	    F_color(char *line);
+unsigned int	    C_color(char *line);
 unsigned int	_rgba(int r, int g, int b, int a);
+int	    ExtractsAssetsFromFile(char *map, t_mlx *mlx);
+int	    ExtractAssetsRows(int fd, char **map);
 char	*ft_strtrim(char const *s1, char const *set);
 int     check_map(t_mlx *mlx);
 void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx);
+void	ParseLineExtractAssets(char *line, t_mlx *mlx);
+int  my_strlen(char *str);
 
 
 #endif

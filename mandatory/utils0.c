@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map.c                                              :+:      :+:    :+:   */
+/*   utils0.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:51:12 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/20 11:15:17 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/23 21:55:12 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,11 +168,11 @@ unsigned int	_rgba(int r, int g, int b, int a)
 	return (r << 24 | g << 16 | b << 8 | a);
 }
 
-int	F_color(char *line)
+unsigned int	F_color(char *line)
 {
-	int		i;
-	int		color;
-	char	**rgb;
+	int					i;
+	unsigned int		color;
+	char				**rgb;
 
 	i = 0;
 	if (n_cmp(line, "F ", 2) != 0)
@@ -181,15 +181,15 @@ int	F_color(char *line)
 	while (ft_strchr(" \t", line[i]))
 		i++;
 	rgb = Split_string(&line[i], ',');
-	color = _rgba(ft_atoi(rgb[0]), ft_atoi(rgb[1]), ft_atoi(rgb[2]), 0);
+	color = (unsigned int)_rgba(ft_atoi(rgb[0]), ft_atoi(rgb[1]), ft_atoi(rgb[2]), 0);
 	ft_free(rgb);
 	return (color);
 }
 
-int	C_color(char *line)
+unsigned int	C_color(char *line)
 {
 	int		i;
-	int		color;
+	unsigned int		color;
 	char	**rgb;
 
 	i = 0;
@@ -199,7 +199,7 @@ int	C_color(char *line)
 	while (ft_strchr(" \t", line[i]))
 		i++;
 	rgb = Split_string(&line[i], ',');
-	color = _rgba(ft_atoi(rgb[0]), ft_atoi(rgb[1]), ft_atoi(rgb[2]), 0);
+	color = (unsigned int)_rgba(ft_atoi(rgb[0]), ft_atoi(rgb[1]), ft_atoi(rgb[2]), 0);
 	ft_free(rgb);
 	return (color);
 }

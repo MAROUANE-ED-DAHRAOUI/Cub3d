@@ -6,14 +6,14 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 21:11:59 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/19 12:45:44 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/23 21:52:06 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
 
-#include "../cub3d.h"
+#include "./cub3d.h"
 
 typedef struct s_cord
 {
@@ -66,10 +66,10 @@ typedef struct s_map
 	char			*path[4];
 	char			**map;
 	mlx_texture_t	*textures[4];;
-	char			**textures;
+	// char			**textures;
 	char			**colors;
-	int				f_color;
-	int				c_color;
+	unsigned int	f_color;
+	unsigned int	c_color;
 }t_map;
 
 typedef struct s_player
