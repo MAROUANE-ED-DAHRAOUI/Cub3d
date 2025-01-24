@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 12:27:29 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 13:53:35 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,19 +68,11 @@ unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 
 void load_textures(t_mlx *mlx)
 {
-    // Allocate memory for textures
-    // mlx->textures = malloc(sizeof(t_texture));
-    // if (!mlx->textures)
-    // {
-    //     fprintf(stderr, "Failed to allocate memory for textures\n");
-    //     exit(EXIT_FAILURE);
-    // }
-
-	// mlx->map.textures = (char **)malloc(4 * sizeof(char *));
 	mlx->map.textures[0] = mlx_load_png(mlx->map.path[0]);
 	mlx->map.textures[1] = mlx_load_png(mlx->map.path[1]);
 	mlx->map.textures[2] = mlx_load_png(mlx->map.path[2]);
 	mlx->map.textures[3] = mlx_load_png(mlx->map.path[3]);
+	
 	free(mlx->map.path[0]);
 	free(mlx->map.path[1]);
 	free(mlx->map.path[2]);
@@ -167,7 +159,7 @@ int main(int ac, char **av)
 			printf("something wrong in map\n");
 			exit(EXIT_FAILURE);
 		}
-		if(PlayerCounter(&mlx) == 0)
+		if(PlayerCounter(&mlx) != 0)
 		{
 			fprintf(stderr, "There is a wrong in map\n");
 			return -1;

@@ -1,7 +1,7 @@
-NO /home/marouane/Desktop/marouanCub3d/texture/north.png
-SO /home/marouane/Desktop/marouanCub3d/texture/south.png
-WE /home/marouane/Desktop/marouanCub3d/texture/west.png
-EA /home/marouane/Desktop/marouanCub3d/texture/east.png
+NO ./texture/north.png
+SO ./texture/south.png
+WE ./texture/west.png
+EA ./texture/east.png
 
 C 10,10,250
 F 90,90,255
