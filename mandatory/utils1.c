@@ -115,12 +115,12 @@ static void where_look_ray(t_ray *ray, double rangle)
  */
 static void NormalizationProcessRay(t_ray *ray, t_mlx *mlx)
 {
-    if (ray->ray_x > ((mlx->map.col) * size))
-		ray->ray_x = ((mlx->map.col) * size) - 1;
+    if (ray->ray_x > ((mlx->map.row) * size))
+		ray->ray_x = ((mlx->map.row) * size) - 1;
 	else if (ray->ray_x < 0)
 		ray->ray_x = 1;
-	if (ray->ray_y > ((mlx->map.row) * size))
-		ray->ray_y = ((mlx->map.row) * size) - 1;
+	if (ray->ray_y > ((mlx->map.col) * size))
+		ray->ray_y = ((mlx->map.col) * size) - 1;
 	else if (ray->ray_y < 0)
 		ray->ray_y = 1;
 }
@@ -169,7 +169,7 @@ t_ray	hor_intercept(t_mlx *mlx, double rangle, t_ray ray_p)
 		ft_Copymem(&ray, &ray_p, sizeof(t_ray));
 		return (ray);
 	}
-	where_ray_looks(&ray_p, rangle);
+	where_ray_looks(&ray, rangle);
 	ystep = mlx->map.row;
 	if (ray.looks[1])
 	{
