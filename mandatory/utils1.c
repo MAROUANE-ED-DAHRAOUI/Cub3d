@@ -173,16 +173,16 @@ t_ray	hor_intercept(t_mlx *mlx, double rangle, t_ray ray_p)
 	ystep = mlx->map.row;
 	if (ray.looks[1])
 	{
-		ray.ray_y = floor(mlx->player.y / size) * size - 0.001;
+		ray.ray_y = floor(ray_p.ray_y / size) * size - 0.001;
 		ray.ray_x = ray_p.ray_x + fabs(
-				ray.ray_y - mlx->player.y) / tan(rangle * (PI / 180));
+				ray.ray_y - ray_p.ray_y) / tan(rangle * (M_PI / 180));
 	}
 	else
 	{
 		ray.ray_y = floor(
 				(ray_p.ray_y + size) / size) * size;
-		ray.ray_x = mlx->player.x + fabs(
-				ray.ray_y - mlx->player.y) / -tan(rangle * (PI / 180));
+		ray.ray_x = ray_p.ray_x + fabs(
+				ray.ray_y - ray_p.ray_y) / -tan(rangle * (M_PI / 180));
 	}
 	NormalizationProcessRay(&ray, mlx);
 	return (ray);
