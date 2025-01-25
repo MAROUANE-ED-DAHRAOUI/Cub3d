@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:45:25 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 12:49:11 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 10:37:25 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@
 #define  FOV 60
 # define PI 3.1415926535897
 #define  WALL_PADDING 10 
-# define size 40
+# define size 32
 # define BUFFER_SIZE 42
 # define WIDTH 1200
-# define HEIGHT 1000
+# define HEIGHT 800
 # define MLX_KEY_ESC 256
 # define MLX_KEY_W 87
 # define MLX_KEY_S 83

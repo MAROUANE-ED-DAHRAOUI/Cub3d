@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:27:10 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/20 20:26:54 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 10:04:46 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void draw_vertical_line(t_mlx *mlx, int i_x, double *coords, unsigned int color)
 	}
 }
 
-void	draw_rays(t_mlx *mlx, int i_x)
+void	draw_rays(t_mlx *mlx, int i_x , t_ray *ray)
 {
     int          x_texture = 0;
     int             color = 0;
@@ -130,15 +130,15 @@ void	draw_rays(t_mlx *mlx, int i_x)
     double          tstep;
     int             index = 0;
 
-    mlx->rays->ray_x = mlx->player.x;
-    mlx->rays->ray_y = mlx->player.y;
+    // printf("1230ana hna\n");
+    ray->ray_x = mlx->player.x;
+    ray->ray_y = mlx->player.y;
     tstep = (mlx->pxl.endy - mlx->pxl.starty) / size;
-    
     // Calculate initial x_texture coordinate
-	if (mlx->rays->vertical == false) 
-    	x_texture = (int)mlx->rays->ray_x % size;
+	if (ray->vertical == false) 
+    	x_texture = (int)ray->ray_x % size;
 	else
-    	x_texture = (int)mlx->rays->ray_y % size;
+    	x_texture = (int)ray->ray_y % size;
     
     while(index < size)
     {
@@ -159,7 +159,9 @@ void      calculate_ray_and_fov(t_mlx *mlx, double *rangle, double *fov_step)
 
 double computeDeg(double rad)
 {
-    return (rad * (PI / 180));
+    // printf("rad = %f\n", rad);
+    // printf("rad * (PI / 180) = %f\n", rad * (PI / 180));
+    return (rad * (M_PI / 180));
 }
 
 t_ray initialRay()
@@ -233,24 +235,23 @@ void draw(void *frr)
     ray_y = mlx->player.y;
     mlx->dprojection = ((double)WIDTH / 2) / tan(computeDeg(FOV / 2));
 
-
     if (mlx->img.img)
         mlx_delete_image(mlx->mlx, mlx->img.img);
     mlx->img.img = mlx_new_image(mlx->mlx, WIDTH, HEIGHT);
 
     ceil_floor_drawing(mlx);
     calculate_ray_and_fov(mlx, &rangle, &fov_step);
-    index = 0;
-    while (index < WIDTH) 
+    index = -1;
+    while (++index < WIDTH) 
     {
         AdjustFovAngle(&rangle);
         ray = cast_ray(mlx, rangle);
-        line_height = (double)size / (mlx->rays->distance * cos(computeDeg(rangle - mlx->player.position))) * mlx->dprojection;
+        line_height = (double)(size / (ray.distance * cos(computeDeg(rangle - mlx->player.position))) * mlx->dprojection);
+        printf("----> %f\n", line_height);
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
         pxl.endy = (HEIGHT / 2) + (line_height / 2);
-        draw_rays(mlx, index);
+        draw_rays(mlx, index, &ray);
         rangle += fov_step;
-        index++;
     }
     draw_map(mlx);
     mlx_image_to_window(mlx->mlx, mlx->img.img, 0, 0);

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:51:12 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/23 21:55:12 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/24 19:56:06 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,6 @@ size_t	count_tokens(char const *s, char c)
 	}
 	return (count);
 }
-
 
 char	**Split_string(char const *src, char sep)
 {

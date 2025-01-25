@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 10:19:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2025/01/20 13:21:58 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 10:33:19 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ bool	check_inters(t_mlx *mlx, t_ray *ray)
 	int	interSection_x;
 	int	interSection_y;
 
+	printf("ray->ray_x = %f\n", ray->ray_x);
+	printf("ray->ray_y = %f\n", ray->ray_y);
 	interSection_y = floor(ray->ray_y / size);
 	interSection_x = floor(ray->ray_x / size);
 	if (interSection_y < 0)
@@ -48,6 +50,8 @@ bool	check_inters(t_mlx *mlx, t_ray *ray)
 
 void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx)
 {
+	printf("x_step = %f\n", x_step);
+	printf("y_step = %f\n", y_step);
 	while (check_inters(mlx, player) == false)
 	{
 		player->ray_x += x_step;
@@ -62,24 +66,23 @@ void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx)
  * @param ray The ray to be checked for interception.
  * @return True if the ray intercepts with an obstacle, false otherwise.
  */
-bool CheckIntercept(t_mlx *mlx, t_ray ray)
+bool CheckIntercept(t_mlx *mlx, t_ray *ray)
 {
     // Calculate the grid coordinates of the ray's position
-    int x = floor(ray.ray_x / size);
-    int y = floor(ray.ray_y / size);
+    int x = floor(ray->ray_x / size);
+    int y = floor(ray->ray_y / size);
 
     // Handle out-of-bounds cases
     if (y < 0)
         y = 0;
     if (x < 0)
         x = 0;
-    if (y > mlx->map.row - 1 || x > mlx->map.col - 1)
+    if (y > mlx->map.col - 1 || x > mlx->map.row - 1)
         return true;
 
     // Check if the grid cell contains an obstacle
     if (mlx->map.map[y][x] == '1')
         return true;
-
     return false;
 }
 
@@ -127,7 +130,7 @@ t_ray ver_intercept(t_mlx *mlx, double rangle, t_ray ray_p)
     t_ray ray;
     int xstep;
 
-    if(CheckIntercept(mlx, ray_p) == true)
+    if(CheckIntercept(mlx, &ray_p) == true)
     {
         ft_Copymem(&ray, &ray_p, sizeof(t_ray));
         return ray;
@@ -202,7 +205,14 @@ t_ray cast_ray(t_mlx *mlx, double rangle)
     ray_h = hor_intercept(mlx, rangle, ray_h);
     step_ver = ver_intercept(mlx, rangle, ray_p);
     step_hor = hor_intercept(mlx, rangle, ray_h);
+	
 
+	printf("->ray_p.ray_x = %f\n", ray_p.ray_x);
+	printf("->ray_p.ray_y = %f\n", ray_p.ray_y);
+	printf("->step_ver.ray_x = %f\n", step_ver.ray_x);
+	printf("->step_ver.ray_y = %f\n", step_ver.ray_y);
+	printf("->step_ver.ray_x - ray_p.ray_x = %f\n", step_ver.ray_x - ray_p.ray_x);
+	printf("->step_ver.ray_y - ray_p.ray_y = %f\n", step_ver.ray_y - ray_p.ray_y);
     find_intersection(step_ver.ray_x - ray_p.ray_x, step_ver.ray_y - ray_p.ray_y,
 		&step_ver, mlx);
 	find_intersection(step_hor.ray_x - ray_h.ray_x, step_hor.ray_y - ray_h.ray_y,
