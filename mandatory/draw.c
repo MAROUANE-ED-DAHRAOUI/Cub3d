@@ -227,8 +227,8 @@ void draw(void *frr)
     float ray_y;
     t_ray ray;
     
-    mlx = (t_mlx *)frr;
     ray = initialRay();
+    mlx = (t_mlx *)frr;
     move_player(mlx);
     line_height = 0;
     ray_x = mlx->player.x;
@@ -247,7 +247,6 @@ void draw(void *frr)
         AdjustFovAngle(&rangle);
         ray = cast_ray(mlx, rangle);
         line_height = (double)(size / (ray.distance * cos(computeDeg(rangle - mlx->player.position))) * mlx->dprojection);
-        printf("----> %f\n", line_height);
         pxl.starty = (HEIGHT / 2) - (line_height / 2);
         pxl.endy = (HEIGHT / 2) + (line_height / 2);
         draw_rays(mlx, index, &ray);

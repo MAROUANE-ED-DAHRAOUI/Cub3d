@@ -78,7 +78,7 @@ bool CheckIntercept(t_mlx *mlx, t_ray *ray)
     if (x < 0)
         x = 0;
     if (y > mlx->map.col - 1 || x > mlx->map.row - 1)
-        return true;
+          return true;
 
     // Check if the grid cell contains an obstacle
     if (mlx->map.map[y][x] == '1')
@@ -133,19 +133,19 @@ t_ray ver_intercept(t_mlx *mlx, double rangle, t_ray ray_p)
     if(CheckIntercept(mlx, &ray_p) == true)
     {
         ft_Copymem(&ray, &ray_p, sizeof(t_ray));
-        return ray;
+        return (ray);
     }
     where_look_ray(&ray, rangle);
-    xstep = mlx->map.col * mlx->map.row;
+    xstep = mlx->map.row * mlx->map.col;
     if (ray.looks[3])
 	{
-		ray.ray_x = floor(mlx->player.x / size) * size - 0.001;
-		ray.ray_y = mlx->player.y + fabs(ray.ray_x - mlx->player.x) * tan(rangle * (PI / 180));
+		ray.ray_x = floor(ray_p.ray_x / size) * size - 0.001;
+		ray.ray_y = mlx->player.y + fabs(ray.ray_x - ray_p.ray_x) * tan(rangle * (M_PI / 180));
 	}
 	else
 	{
-		ray.ray_x = floor((mlx->player.x + size) / size) * size;
-		ray.ray_y = mlx->player.y + fabs(ray.ray_x - mlx->player.x) * -tan(rangle * (PI / 180));
+		ray.ray_x = floor((ray_p.ray_x + size) / size) * size;
+		ray.ray_y = ray_p.ray_y + fabs(ray.ray_x - ray_p.ray_x) * -tan(rangle * (M_PI / 180));
 	}
 	NormalizationProcessRay(&ray, mlx);
 	return (ray);
@@ -188,8 +188,6 @@ t_ray	hor_intercept(t_mlx *mlx, double rangle, t_ray ray_p)
 	return (ray);
 }
 
-
-
 t_ray cast_ray(t_mlx *mlx, double rangle)
 {
     t_ray ray_h;
@@ -205,7 +203,6 @@ t_ray cast_ray(t_mlx *mlx, double rangle)
     ray_h = hor_intercept(mlx, rangle, ray_h);
     step_ver = ver_intercept(mlx, rangle, ray_p);
     step_hor = hor_intercept(mlx, rangle, ray_h);
-	
 
 	printf("->ray_p.ray_x = %f\n", ray_p.ray_x);
 	printf("->ray_p.ray_y = %f\n", ray_p.ray_y);
