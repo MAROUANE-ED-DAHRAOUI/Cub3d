@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 13:42:05 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 21:16:57 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ int	PlayerCounter(t_mlx *mlx)
 	
 			if(ft_strchr("NSEW", mlx->map.map[i][idx]))
 			{
-				printf("-->player position %d %d\n", i, idx);
 				if (player_position(mlx, i, idx) == -1)
 					    return (printf("player position is a problem\n"), -1);
 				StoreDataPlayer(mlx, i, idx);

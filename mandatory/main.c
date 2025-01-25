@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:44:58 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 19:59:02 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 21:12:54 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,23 +29,10 @@ void	*ft_calloc(size_t count, size_t _size)
 	return (res);
 }
 
-void free_textures(t_mlx *mlx)
-{
-    if (mlx->textures)
-    {
-        if (mlx->textures->no)
-            mlx_delete_texture(mlx->textures->no);
-        if (mlx->textures->so)
-            mlx_delete_texture(mlx->textures->so);
-        if (mlx->textures->we)
-            mlx_delete_texture(mlx->textures->we);
-        if (mlx->textures->ea)
-            mlx_delete_texture(mlx->textures->ea);
-
-        free(mlx->textures); // Free the allocated structure
-        mlx->textures = NULL;
-    }
-}
+// void free_textures(t_mlx *mlx)
+// {
+	
+// }
 
 unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 {
@@ -168,7 +155,8 @@ int main(int ac, char **av)
 		__create_window(&mlx);
 		mlx_loop_hook(mlx.mlx , draw, &mlx);
     	mlx_loop(mlx.mlx);
-		free_textures(&mlx);
+		printf("done\n");
+		// free_textures(&mlx);
 	}
 	else
 		__error(0, 0);

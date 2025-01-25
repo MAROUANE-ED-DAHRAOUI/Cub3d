@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:51:12 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 13:35:31 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 21:15:04 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ int	check_map_closed(t_mlx *mlx)
 	i = 0;
 	while (i < mlx->map.col)
 	{
-		printf("map[%d] = %s\n", i, mlx->map.map[i]);
 		idx = 0;
 		while (mlx->map.map[i][idx])
 		{
@@ -133,7 +132,6 @@ int 	check_map(t_mlx *mlx)
 		}
 		i++;
 	}
-	printf("map is valid\n");
 	if (check_map_closed(mlx) == -1)
 		return (printf("there is aproblem in map\n"), -1);
 	if(check_first_last_line(mlx) == -1)
@@ -160,7 +158,6 @@ int		ExtractAssetsRows(int fd, char **map)
 		if (my_strlen(tmp[1]))
 		{
 			map[i++] = ft_strtrim(tmp[0], " \n");
-			printf("map[%d] = %s\n", i - 1, map[i - 1]);
 			if(!(map[i] == '\0'))
 			{
 				printf("failed: map is empty\n");
@@ -196,7 +193,6 @@ void	read_and_fill_map(char *str, t_mlx *mlx)
 		free(get_next_line(fd));
 	map = ft_calloc(mlx->map.col + 7, sizeof(char *));	
 	mlx->map.row = (int)ExtractAssetsRows(fd, map);
-	printf("row %d, col%d\n", mlx->map.row, mlx->map.col);
 	mlx->map.map = map;
 	close(fd);
 }
@@ -254,7 +250,6 @@ void	check_valid_map(char *map, t_mlx *mlx)
 	col = 0;
 
 	mlx->map.skip = ExtractsAssetsFromFile(map, mlx);
-	printf("skip %d\n", mlx->map.skip);
 	fd = open(map, O_RDONLY);
 	if(fd == -1)
 	{

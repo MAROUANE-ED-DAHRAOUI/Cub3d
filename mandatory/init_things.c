@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 16:30:56 by bbadda            #+#    #+#             */
-/*   Updated: 2025/01/24 13:07:58 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 21:14:06 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	__create_window(t_mlx *mlx)
  */
 int	player_position(t_mlx *mlx, int i, int j)
 {
-	printf("player position %d %d\n", i, j);
 	if (ft_strchr("NSEW", mlx->map.map[i][j]))
 	{
 		if (space_surrounding(mlx, i, j) == -1)

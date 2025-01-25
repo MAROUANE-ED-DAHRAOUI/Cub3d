@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 10:19:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2025/01/25 10:33:19 by med-dahr         ###   ########.fr       */
+/*   Updated: 2025/01/25 21:15:39 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,13 @@ bool	check_inters(t_mlx *mlx, t_ray *ray)
 	int	interSection_x;
 	int	interSection_y;
 
-	printf("ray->ray_x = %f\n", ray->ray_x);
-	printf("ray->ray_y = %f\n", ray->ray_y);
 	interSection_y = floor(ray->ray_y / size);
 	interSection_x = floor(ray->ray_x / size);
 	if (interSection_y < 0)
 		interSection_y = 0;
 	if (interSection_x < 0)
 		interSection_x = 0;
-	if (interSection_y > mlx->map.row - 1 || interSection_x > mlx->map.col - 1)
+	if (interSection_y > mlx->map.col - 1 || interSection_x > mlx->map.row - 1)
 		return (true);
 	if (mlx->map.map[interSection_y][interSection_x] == '1')
 		return (true);
@@ -50,8 +48,6 @@ bool	check_inters(t_mlx *mlx, t_ray *ray)
 
 void	find_intersection(double x_step, double y_step, t_ray *player, t_mlx *mlx)
 {
-	printf("x_step = %f\n", x_step);
-	printf("y_step = %f\n", y_step);
 	while (check_inters(mlx, player) == false)
 	{
 		player->ray_x += x_step;
@@ -204,12 +200,6 @@ t_ray cast_ray(t_mlx *mlx, double rangle)
     step_ver = ver_intercept(mlx, rangle, ray_p);
     step_hor = hor_intercept(mlx, rangle, ray_h);
 
-	printf("->ray_p.ray_x = %f\n", ray_p.ray_x);
-	printf("->ray_p.ray_y = %f\n", ray_p.ray_y);
-	printf("->step_ver.ray_x = %f\n", step_ver.ray_x);
-	printf("->step_ver.ray_y = %f\n", step_ver.ray_y);
-	printf("->step_ver.ray_x - ray_p.ray_x = %f\n", step_ver.ray_x - ray_p.ray_x);
-	printf("->step_ver.ray_y - ray_p.ray_y = %f\n", step_ver.ray_y - ray_p.ray_y);
     find_intersection(step_ver.ray_x - ray_p.ray_x, step_ver.ray_y - ray_p.ray_y,
 		&step_ver, mlx);
 	find_intersection(step_hor.ray_x - ray_h.ray_x, step_hor.ray_y - ray_h.ray_y,
