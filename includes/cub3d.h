@@ -26,11 +26,11 @@
 
 #define  FOV 60
 # define PI 3.1415926535897
-#define  WALL_PADDING 10 
+#define  WALL_PADDING 8 
 # define size 32
 # define BUFFER_SIZE 42
-# define WIDTH 1900
-# define HEIGHT 1000
+# define WIDTH 1200
+# define HEIGHT 800
 # define MLX_KEY_ESC 256
 # define MLX_KEY_W 87
 # define MLX_KEY_S 83
@@ -39,8 +39,9 @@
 # define MLX_KEY_R_RIGHT 263
 # define MLX_KEY_R_LEFT 262
 #define MINI_MAP_SCALE 0.2 // Mini-map is 20% of the actual size
-#define SPEED_ROTATE 0.1
-#define SPEED_PLY 0.1
+#define SPEED_ROTATE 1.0f
+#define SPEED_PLY 1.0f
+
 
 int			get_colors(char *str);
 int			cmp(const char *s1, const char *s2);

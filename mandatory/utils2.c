@@ -69,7 +69,6 @@ int	PlayerCounter(t_mlx *mlx)
 		{
 			if (space_surrounding(mlx, i, idx) == -1)
 				return (-1);
-	
 			if(ft_strchr("NSEW", mlx->map.map[i][idx]))
 			{
 				if (player_position(mlx, i, idx) == -1)

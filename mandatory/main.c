@@ -36,19 +36,18 @@ void	*ft_calloc(size_t count, size_t _size)
 
 unsigned int	*convert_tex_to_px(mlx_texture_t *texture)
 {
-	unsigned int				x;
-	unsigned int				y;
+	int				x;
+	int				y;
 	unsigned int				*pixels;
 
-	x = 0;
+	x = -1;
 	y = 0;
 	pixels = ft_calloc(texture->width * texture->height, sizeof(unsigned int));
-	while (x < (texture->width * texture->height))
+	while (++x < (texture->width * texture->height))
 	{
 		pixels[x] = _rgba(texture->pixels[y], texture->pixels[y + 1],
 				texture->pixels[y + 2], texture->pixels[y + 3]);
 		y += 4;
-		x++;
 	}
 	return (pixels);
 }
@@ -155,7 +154,6 @@ int main(int ac, char **av)
 		__create_window(&mlx);
 		mlx_loop_hook(mlx.mlx , draw, &mlx);
     	mlx_loop(mlx.mlx);
-		printf("done\n");
 		// free_textures(&mlx);
 	}
 	else
