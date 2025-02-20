@@ -1,0 +1,11 @@
+NO ./mandatory/texture/nouth.png
+SO ./mandatory/texture/south.png
+WE ./mandatory/texture/west.png
+EA ./mandatory/texture/east.png
+
+C 35,19,73
+F 15,6,40
+
+1111
+10N1
+1111
